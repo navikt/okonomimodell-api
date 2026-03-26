@@ -1,0 +1,51 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: kontoplan-api
+  namespace: team-oebs
+  labels:
+    team: team-oebs
+spec:
+  image: {{image}}
+  port: 8080
+
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+
+  liveness:
+    path: /actuator/health/liveness
+    initialDelay: 10
+    periodSeconds: 5
+    failureThreshold: 3
+
+  readiness:
+    path: /actuator/health/readiness
+    initialDelay: 10
+    periodSeconds: 5
+    failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 80
+
+  ingresses:
+    - https://kontoplan-api.intern.dev.nav.no
+
+  accessPolicy:
+    inbound:
+      rules: []
+    outbound:
+      rules: []
+
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: dev
