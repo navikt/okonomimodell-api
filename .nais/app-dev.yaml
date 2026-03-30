@@ -44,8 +44,10 @@ spec:
     inbound:
       rules: []
     outbound:
-      external:
-        - host: TODO_OEBS_DEV_HOST # brunnmursåpning — fill in OeBS dev hostname
+      external: []
+      # TODO: Add OeBS hostname here once brunnmursåpning is confirmed
+      # external:
+      #   - host: <oebs-dev-hostname>
 
   envFrom:
     - secret: kontoplan-api-oebs-credentials
