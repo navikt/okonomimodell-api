@@ -11,30 +11,34 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import no.nav.oebs.kontoplan_api.service.OkonomimodellService;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/okonomimodell")
 @RequiredArgsConstructor
-@Tag(name = "Økonomimodell", description = "Segmenter i økonomimodellen fra OeBS")
+@Tag(name = "Okonomimodell", description = "Segments in the OeBS accounting model")
 public class OkonomimodellController {
 
+    private final OkonomimodellService service;
+
     @GetMapping("/segmenter")
-    @Operation(summary = "Hent alle segmenter", description = "Returnerer alle segmenter, med valgfri filtrering på aktive og system")
+    @Operation(summary = "Get all segments", description = "Returns all segments, with optional filtering on active and system")
     public ResponseEntity<List<SegmentResponse>> getSegmenter(
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) String system) {
 
-        log.info("Henter segmenter - active={}, system={}", active, system);
-        return ResponseEntity.ok(List.of());
+        log.info("Fetching segments - active={}, system={}", active, system);
+        return ResponseEntity.ok(service.getSegmenter(active, system));
     }
 
     @GetMapping("/segmenter/{segmenttype}")
-    @Operation(summary = "Hent segmenter for type", description = "Returnerer segmenter for angitt segmenttype")
+    @Operation(summary = "Get segments by type", description = "Returns segments for the given segment type")
     public ResponseEntity<List<SegmentResponse>> getSegmenterByType(
             @PathVariable Segment segmenttype,
             @RequestParam(required = false) Boolean active) {
 
-        log.info("Henter segmenter for type={} - active={}", segmenttype, active);
-        return ResponseEntity.ok(List.of());
+        log.info("Fetching segments for type={} - active={}", segmenttype, active);
+        return ResponseEntity.ok(service.getSegmenterByType(segmenttype, active));
     }
 }

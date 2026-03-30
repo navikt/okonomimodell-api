@@ -13,7 +13,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Kontoplan API")
-                        .description("API for henting av segmenter i økonomimodellen fra OeBS")
+                        .description("API for fetching segments in the OeBS accounting model")
                         .version("v1"));
     }
 }
