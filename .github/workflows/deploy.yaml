@@ -37,7 +37,7 @@ jobs:
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
-          team: oksty
+          team: team-oebs
 
   deploy-dev:
     name: Deploy to dev
