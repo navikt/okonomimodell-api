@@ -1,17 +1,17 @@
-package no.nav.oebs.kontoplan_api.controller;
+package no.nav.oebs.okonomimodell.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.oebs.kontoplan_api.model.Segment;
-import no.nav.oebs.kontoplan_api.model.SegmentResponse;
+import no.nav.oebs.okonomimodell.model.Segment;
+import no.nav.oebs.okonomimodell.model.SegmentResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import no.nav.oebs.kontoplan_api.service.OkonomimodellService;
+import no.nav.oebs.okonomimodell.service.OkonomimodellService;
 
 @Slf4j
 @RestController

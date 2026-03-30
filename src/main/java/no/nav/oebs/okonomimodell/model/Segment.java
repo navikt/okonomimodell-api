@@ -1,4 +1,4 @@
-package no.nav.oebs.kontoplan_api.model;
+package no.nav.oebs.okonomimodell.model;
 
 public enum Segment {
     ARTSKONTO,

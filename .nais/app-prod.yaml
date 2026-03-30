@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: kontoplan-api
+  name: okonomimodell-api
   namespace: team-oebs
   labels:
     team: team-oebs
@@ -38,7 +38,7 @@ spec:
     cpuThresholdPercentage: 80
 
   ingresses:
-    - https://kontoplan-api.intern.nav.no
+    - https://okonomimodell-api.intern.nav.no
 
   accessPolicy:
     inbound:
@@ -50,7 +50,7 @@ spec:
       #   - host: <oebs-prod-hostname>
 
   envFrom:
-    - secret: kontoplan-api-oebs-credentials
+    - secret: okonomimodell-api-oebs-credentials
 
   env:
     - name: SPRING_PROFILES_ACTIVE

@@ -1,10 +1,10 @@
-package no.nav.oebs.kontoplan_api;
+package no.nav.oebs.okonomimodell;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class KontoplanApiApplicationTests {
+class OkonomimodellApplicationTests {
 
 	@Test
 	void contextLoads() {

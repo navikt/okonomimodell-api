@@ -1,9 +1,9 @@
-package no.nav.oebs.kontoplan_api.service;
+package no.nav.oebs.okonomimodell.service;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.oebs.kontoplan_api.model.Segment;
-import no.nav.oebs.kontoplan_api.model.SegmentResponse;
-import no.nav.oebs.kontoplan_api.repository.OkonomimodellRepository;
+import no.nav.oebs.okonomimodell.model.Segment;
+import no.nav.oebs.okonomimodell.model.SegmentResponse;
+import no.nav.oebs.okonomimodell.repository.OkonomimodellRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

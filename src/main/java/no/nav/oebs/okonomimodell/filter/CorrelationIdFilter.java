@@ -1,4 +1,4 @@
-package no.nav.oebs.kontoplan_api.filter;
+package no.nav.oebs.okonomimodell.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

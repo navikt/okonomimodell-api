@@ -1,7 +1,7 @@
-package no.nav.oebs.kontoplan_api.repository;
+package no.nav.oebs.okonomimodell.repository;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.oebs.kontoplan_api.model.KonteringsInfoResponse;
+import no.nav.oebs.okonomimodell.model.KonteringsInfoResponse;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
