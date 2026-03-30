@@ -44,7 +44,11 @@ spec:
     inbound:
       rules: []
     outbound:
-      rules: []
+      external:
+        - host: TODO_OEBS_DEV_HOST # brunnmursåpning — fill in OeBS dev hostname
+
+  envFrom:
+    - secret: kontoplan-api-oebs-credentials
 
   env:
     - name: SPRING_PROFILES_ACTIVE
