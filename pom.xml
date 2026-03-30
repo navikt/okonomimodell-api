@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>no.nav.oebs</groupId>
-	<artifactId>kontoplan-api</artifactId>
+	<artifactId>okonomimodell-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
