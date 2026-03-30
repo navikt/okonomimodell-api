@@ -1,5 +1,4 @@
-FROM eclipse-temurin:21-jre-alpine
-RUN apk upgrade --no-cache
+FROM gcr.io/distroless/java21-debian12:nonroot
 WORKDIR /app
 COPY target/kontoplan-api-*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
