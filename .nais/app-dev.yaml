@@ -49,8 +49,9 @@ spec:
       # external:
       #   - host: <oebs-dev-hostname>
 
-  envFrom:
-    - secret: kontoplan-api-oebs-credentials
+  # envFrom:
+  #   - secret: kontoplan-api-oebs-credentials
+  # TODO: Uncomment once kontoplan-api-oebs-credentials secret is created in team-oebs
 
   env:
     - name: SPRING_PROFILES_ACTIVE
