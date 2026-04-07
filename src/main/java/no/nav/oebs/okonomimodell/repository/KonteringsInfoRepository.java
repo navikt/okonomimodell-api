@@ -2,7 +2,6 @@ package no.nav.oebs.okonomimodell.repository;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.oebs.okonomimodell.model.KonteringsInfoResponse;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KonteringsInfoRepository {
 
-    private final JdbcClient jdbcClient;
+    //private final JdbcClient jdbcClient;
 
     // TODO: Replace view name and column names once OeBS schema is confirmed
     public List<KonteringsInfoResponse> findActive(String orgId, String segmentnavn, String system) {

@@ -3,7 +3,6 @@ package no.nav.oebs.okonomimodell.repository;
 import lombok.RequiredArgsConstructor;
 import no.nav.oebs.okonomimodell.model.Segment;
 import no.nav.oebs.okonomimodell.model.SegmentResponse;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OkonomimodellRepository {
 
-    private final JdbcClient jdbcClient;
+    //private final JdbcClient jdbcClient;
 
     // TODO: Replace view name and column names once OeBS schema is confirmed
     private static final String BASE_QUERY = """
