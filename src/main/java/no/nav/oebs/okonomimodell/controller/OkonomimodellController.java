@@ -1,44 +1,27 @@
 package no.nav.oebs.okonomimodell.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import no.nav.oebs.okonomimodell.model.Segment;
-import no.nav.oebs.okonomimodell.model.SegmentResponse;
+import no.nav.oebs.okonomimodell.service.OkonomimodellService;
+import org.openapitools.api.SegmenterApi;
+import org.openapitools.model.Segment;
+import org.openapitools.model.SegmentType;
+import org.openapitools.model.System;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import no.nav.oebs.okonomimodell.service.OkonomimodellService;
-
-@Slf4j
 @RestController
-@RequestMapping("/api/v1/okonomimodell")
-@RequiredArgsConstructor
-@Tag(name = "Okonomimodell", description = "Segments in the OeBS accounting model")
-public class OkonomimodellController {
+public class OkonomimodellController implements SegmenterApi {
 
-    private final OkonomimodellService service;
+    private final OkonomimodellService okonomimodellService;
 
-    @GetMapping("/segmenter")
-    @Operation(summary = "Get all segments", description = "Returns all segments, with optional filtering on active and system")
-    public ResponseEntity<List<SegmentResponse>> getSegmenter(
-            @RequestParam(required = false) Boolean active,
-            @RequestParam(required = false) String system) {
-
-        log.info("Fetching segments - active={}, system={}", active, system);
-        return ResponseEntity.ok(service.getSegmenter(active, system));
+    public OkonomimodellController(OkonomimodellService okonomimodellService) {
+        this.okonomimodellService = okonomimodellService;
     }
 
-    @GetMapping("/segmenter/{segmenttype}")
-    @Operation(summary = "Get segments by type", description = "Returns segments for the given segment type")
-    public ResponseEntity<List<SegmentResponse>> getSegmenterByType(
-            @PathVariable Segment segmenttype,
-            @RequestParam(required = false) Boolean active) {
-
-        log.info("Fetching segments for type={} - active={}", segmenttype, active);
-        return ResponseEntity.ok(service.getSegmenterByType(segmenttype, active));
+    @Override
+    public ResponseEntity<List<Segment>> segementer(System system, SegmentType segmentType) {
+        List<Segment> segments = okonomimodellService.getSegments(system, segmentType);
+        return ResponseEntity.ok(segments);
     }
 }
