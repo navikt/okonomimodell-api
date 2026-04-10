@@ -4,7 +4,7 @@ info:
   description: Økonomimodell API
   version: 1.0.0
 servers:
-  - url: 'https://okonomimodell-api.intern.dev.nav.no'
+  - url: 'https://okonomimodell-api.intern.dev.nav.no/api/v1'
     description: dev environment
 
 components:
