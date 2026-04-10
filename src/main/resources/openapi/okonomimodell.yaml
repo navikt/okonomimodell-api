@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Økononomimodell API
-  description: Økononomimodell API
+  title: Økonomimodell API
+  description: Økonomimodell API
   version: 1.0.0
 servers:
   - url: 'https://okonomimodell-api.intern.dev.nav.no'
@@ -9,7 +9,7 @@ servers:
 
 components:
   schemas:
-    SegmentType:
+    segmentType:
       type: string
       enum:
         - ARTSKONTO
@@ -18,77 +18,93 @@ components:
         - OPPGAVE
         - STATSREGNSKAPSKONTO
         - FELLES
-    System:
+    system:
       type: string
       enum:
         - LONN
-    DefaultDimension:
+    relasjon:
       type: object
       properties:
-        SegmentType:
-          $ref: '#/components/schemas/SegmentType'
-        SegmentKey:
+        segmentType:
+          $ref: '#/components/schemas/segmentType'
+        segmentVerdi:
           type: string
-          description: Key of the default dimension segment
-    Segment:
+          description: Verdi for segmentet
+    segment:
       type: object
       properties:
-        SegmentType:
-          $ref: '#/components/schemas/SegmentType'
-          description: Name of the segment
-        SegmentKey:
+        segmentType:
+          $ref: '#/components/schemas/segmentType'
+        segmentVerdi:
           type: string
-          description: Key of the segment
-        Description:
+          description: Verdi for segmentet
+        beskrivelse:
           type: string
-          description: Description of the segment
-        DefaultDimension:
+          description: Beskrivelse for segment
+        relasjon:
           type: array
           items:
-            $ref: '#/components/schemas/DefaultDimension'
-          description: Default dimension of the segment
-        ValidFrom:
-          type: string
-          format: date
-          description: Valid from date of the segment
-        ValidTo:
-          type: string
-          format: date
-          description: Valid to date of the segment
+            $ref: '#/components/schemas/relasjon'
+          description: Relasjon til andre segmenter
 
 paths:
-  /segmenter: #todo: Skal det være norsk eller engelsk?
+  /segmenter:
     get:
-      operationId: segementer
+      operationId: segmenter
       summary: Henter alle segmenter
       parameters:
         - name: system
           in: query
           required: false
           schema:
-            $ref: '#/components/schemas/System'
-        - name: segmentType
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/SegmentType'
+            $ref: '#/components/schemas/system'
       responses:
         '200':
-          description: List of products
+          description: Liste alle segmenter
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Segment'
+                  $ref: '#/components/schemas/segment'
               example:
-                - Segment: ARTSKONTO
-                  SegmentKey: "1234"
-                  Description: "Beskrivelse av segmentet"
-                  DefaultDimension:
-                    - Segment: KOSTNADSSTED
-                      SegmentKey: "5678"
-                  ValidFrom: "2024-01-01"
-                  ValidTo: null
+                - segmentType: ARTSKONTO
+                  segmentVerdi: "1234"
+                  beskrivelse: "Beskrivelse av segmentet"
+                  relasjon:
+                    - segmentType: KOSTNADSSTED
+                      segmentVerdi: "5678"
         '500':
           description: Internal Server Error
+
+  /segmenter/{segmentType}:
+    get:
+      operationId: segmenterBySystemType
+      summary: Henter segmenter for et gitt segmentType
+      parameters:
+        - name: segmentType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/segmentType'
+      responses:
+        '200':
+          description: Liste av segmenter for gitt segmentType
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/segment'
+              example:
+                - segmentType: ARTSKONTO
+                  segmentVerdi: "1234"
+                  beskrivelse: "Beskrivelse av segmentet"
+                  relasjon:
+                    - segmentType: KOSTNADSSTED
+                      segmentVerdi: "5678"
+        '404':
+          description: Fant ikke segmenter for gitt segmentType
+        '500':
+          description: Internal Server Error
+

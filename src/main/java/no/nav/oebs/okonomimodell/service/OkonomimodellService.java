@@ -16,7 +16,7 @@ public class OkonomimodellService {
     public OkonomimodellService(OkonomimodellRepository repository) {
         this.repository = repository;
     }
-    public List<Segment> getSegments(System system, SegmentType segmentType) {
+    public List<Segment> getSegments(System system) {
         return repository.findAll();
     }
 
