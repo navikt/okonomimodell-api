@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       deploy_prod:
@@ -31,9 +34,10 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: ./mvnw --no-transfer-progress package -DskipTests
+        run: ./mvnw --no-transfer-progress package
 
       - name: Push Docker image to GAR
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
@@ -42,6 +46,7 @@ jobs:
   deploy-dev:
     name: Deploy to dev
     needs: build
+    if: github.event_name != 'pull_request' && github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

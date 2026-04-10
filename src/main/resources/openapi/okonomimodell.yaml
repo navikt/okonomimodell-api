@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: Økononomimodell API
+  description: Økononomimodell API
+  version: 1.0.0
+servers:
+  - url: 'https://okonomimodell-api.intern.dev.nav.no'
+    description: dev environment
+
+components:
+  schemas:
+    SegmentType:
+      type: string
+      enum:
+        - ARTSKONTO
+        - KOSTNADSSTED
+        - PRODUKT
+        - OPPGAVE
+        - STATSREGNSKAPSKONTO
+        - FELLES
+    System:
+      type: string
+      enum:
+        - LONN
+    DefaultDimension:
+      type: object
+      properties:
+        SegmentType:
+          $ref: '#/components/schemas/SegmentType'
+        SegmentKey:
+          type: string
+          description: Key of the default dimension segment
+    Segment:
+      type: object
+      properties:
+        SegmentType:
+          $ref: '#/components/schemas/SegmentType'
+          description: Name of the segment
+        SegmentKey:
+          type: string
+          description: Key of the segment
+        Description:
+          type: string
+          description: Description of the segment
+        DefaultDimension:
+          type: array
+          items:
+            $ref: '#/components/schemas/DefaultDimension'
+          description: Default dimension of the segment
+        ValidFrom:
+          type: string
+          format: date
+          description: Valid from date of the segment
+        ValidTo:
+          type: string
+          format: date
+          description: Valid to date of the segment
+
+paths:
+  /segmenter: #todo: Skal det være norsk eller engelsk?
+    get:
+      operationId: segementer
+      summary: Henter alle segmenter
+      parameters:
+        - name: system
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/System'
+        - name: segmentType
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/SegmentType'
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segment'
+              example:
+                - Segment: ARTSKONTO
+                  SegmentKey: "1234"
+                  Description: "Beskrivelse av segmentet"
+                  DefaultDimension:
+                    - Segment: KOSTNADSSTED
+                      SegmentKey: "5678"
+                  ValidFrom: "2024-01-01"
+                  ValidTo: null
+        '500':
+          description: Internal Server Error

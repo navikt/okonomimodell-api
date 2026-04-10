@@ -1,8 +1,7 @@
 package no.nav.oebs.okonomimodell.repository;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.oebs.okonomimodell.model.Segment;
-import no.nav.oebs.okonomimodell.model.SegmentResponse;
+import org.openapitools.model.Segment;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,13 +19,13 @@ public class OkonomimodellRepository {
             FROM TODO_OEBS_VIEW_NAME
             """;
 
-    public List<SegmentResponse> findAll() {
+    public List<Segment> findAll() {
         // TODO: implement query once view name and schema are confirmed
         throw new UnsupportedOperationException(
                 "OeBS view name not yet confirmed — update BASE_QUERY before enabling");
     }
 
-    public List<SegmentResponse> findBySegmenttype(Segment segmenttype) {
+    public List<Segment> findBySegmenttype(Segment segmenttype) {
         // TODO: implement query once view name and schema are confirmed
         throw new UnsupportedOperationException(
                 "OeBS view name not yet confirmed — update BASE_QUERY before enabling");

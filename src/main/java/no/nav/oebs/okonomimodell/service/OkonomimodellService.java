@@ -1,38 +1,23 @@
 package no.nav.oebs.okonomimodell.service;
 
-import lombok.RequiredArgsConstructor;
-import no.nav.oebs.okonomimodell.model.Segment;
-import no.nav.oebs.okonomimodell.model.SegmentResponse;
 import no.nav.oebs.okonomimodell.repository.OkonomimodellRepository;
+import org.openapitools.model.Segment;
+import org.openapitools.model.SegmentType;
+import org.openapitools.model.System;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class OkonomimodellService {
 
     private final OkonomimodellRepository repository;
 
-    public List<SegmentResponse> getSegmenter(Boolean active, String system) {
-        List<SegmentResponse> results = repository.findAll();
-        return filter(results, active);
+    public OkonomimodellService(OkonomimodellRepository repository) {
+        this.repository = repository;
+    }
+    public List<Segment> getSegments(System system, SegmentType segmentType) {
+        return repository.findAll();
     }
 
-    public List<SegmentResponse> getSegmenterByType(Segment segmenttype, Boolean active) {
-        List<SegmentResponse> results = repository.findBySegmenttype(segmenttype);
-        return filter(results, active);
-    }
-
-    private List<SegmentResponse> filter(List<SegmentResponse> results, Boolean active) {
-        if (active == null || !active) {
-            return results;
-        }
-        LocalDate today = LocalDate.now();
-        return results.stream()
-                .filter(s -> s.getValidFrom() != null && !s.getValidFrom().isAfter(today))
-                .filter(s -> s.getValidTo() == null || !s.getValidTo().isBefore(today))
-                .toList();
-    }
 }
