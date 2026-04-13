@@ -38,6 +38,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(request, response);
         } finally {
+            log.info("{} {} {} - correlationId={}", request.getMethod(), request.getRequestURI(), response.getStatus(), correlationId);
             MDC.remove(MDC_KEY);
         }
     }
