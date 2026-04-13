@@ -12,9 +12,9 @@ import java.util.List;
 public class JsonToModelMapper {
 
     public List<Segment> mapJsonToSegments(JsonNode jsonSegments) {
-        List<Segment> segments = new java.util.ArrayList<>(List.of());
-        jsonSegments.valueStream().map(this::mapJsonToSegment).forEach(segments::add);
-        return segments;
+        return jsonSegments.valueStream()
+                .map(this::mapJsonToSegment)
+                .toList();
     }
 
     private Segment mapJsonToSegment(JsonNode jsonSegment) {

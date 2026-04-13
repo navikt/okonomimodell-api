@@ -3,6 +3,7 @@ package no.nav.oebs.okonomimodell.repository;
 import lombok.RequiredArgsConstructor;
 import no.nav.oebs.okonomimodell.mapper.JsonToModelMapper;
 import org.openapitools.model.Segment;
+import org.openapitools.model.SegmentType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import tools.jackson.databind.JsonNode;
@@ -40,7 +41,7 @@ public class OkonomimodellRepository {
 //                "OeBS view name not yet confirmed — update BASE_QUERY before enabling");
     }
 
-    public List<Segment> findBySegmenttype(Segment segmenttype) {
+    public List<Segment> findBySegmentType(SegmentType segmentType) {
         // TODO: implement query once view name and schema are confirmed
         throw new UnsupportedOperationException(
                 "OeBS view name not yet confirmed — update BASE_QUERY before enabling");
