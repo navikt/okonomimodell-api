@@ -33,12 +33,15 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         MDC.put(MDC_KEY, correlationId);
         response.setHeader(CORRELATION_ID_HEADER, correlationId);
 
-        log.info("{} {} - correlationId={}", request.getMethod(), request.getRequestURI(), correlationId);
+        String safeMethod = sanitizeForLog(request.getMethod());
+        String safeUri = sanitizeForLog(request.getRequestURI());
+
+        log.info("{} {} - correlationId={}", safeMethod, safeUri, correlationId);
 
         try {
             chain.doFilter(request, response);
         } finally {
-            log.info("{} {} {} - correlationId={}", request.getMethod(), request.getRequestURI(), response.getStatus(), correlationId);
+            log.info("{} {} {} - correlationId={}", safeMethod, safeUri, response.getStatus(), correlationId);
             MDC.remove(MDC_KEY);
         }
     }
