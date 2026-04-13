@@ -16,8 +16,16 @@ public class OkonomimodellService {
     public OkonomimodellService(OkonomimodellRepository repository) {
         this.repository = repository;
     }
+
     public List<Segment> getSegments(System system) {
         return repository.findAll();
+    }
+
+    public List<Segment> getSegmentsBySegmentType(SegmentType segmentType, System system) {
+        return getSegments(system)
+                .stream()
+                .filter(segment -> segmentType.equals(segment.getSegmentType()))
+                .toList();
     }
 
 }
