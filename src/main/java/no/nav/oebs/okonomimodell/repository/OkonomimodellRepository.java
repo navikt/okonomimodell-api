@@ -6,7 +6,7 @@ import org.openapitools.model.Segment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class OkonomimodellRepository {
 
     private final JsonToModelMapper jsonToModelMapper;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     //private final JdbcClient jdbcClient;
 
@@ -31,7 +31,7 @@ public class OkonomimodellRepository {
         // TODO: implement query once view name and schema are confirmed
         try {
             var resource = new ClassPathResource("db-example-respons/all-segments.json");
-            JsonNode root = objectMapper.readTree(resource.getInputStream());
+            JsonNode root = jsonMapper.readTree(resource.getInputStream());
             return jsonToModelMapper.mapJsonToSegments(root);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -9,7 +9,7 @@ servers:
 
 components:
   schemas:
-    segmentType:
+    segmentType: #todo: How should segments with other segmenttypes be processed?
       type: string
       enum:
         - ARTSKONTO
@@ -50,7 +50,7 @@ components:
 paths:
   /segmenter:
     get:
-      operationId: segmenter
+      operationId: segments
       summary: Henter alle segmenter
       parameters:
         - name: system
@@ -79,7 +79,7 @@ paths:
 
   /segmenter/{segmentType}:
     get:
-      operationId: segmenterBySystemType
+      operationId: segmentsBySegmentType
       summary: Henter segmenter for et gitt segmentType
       parameters:
         - name: segmentType
@@ -87,6 +87,11 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/segmentType'
+        - name: system
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/system'
       responses:
         '200':
           description: Liste av segmenter for gitt segmentType
