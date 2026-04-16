@@ -9,15 +9,21 @@ servers:
 
 components:
   schemas:
-    segmentType: #todo: How should segments with other segmenttypes be processed?
+    segmentType:
       type: string
       enum:
         - ARTSKONTO
         - KOSTNADSSTED
         - PRODUKT
         - OPPGAVE
-        - STATSREGNSKAPSKONTO
         - FELLES
+        - STATSREGNSKAPSKONTO
+        - KILDE
+        - TILSAGNSAR
+        - FRITT_FELT_1
+        - FRITT_FELT_2
+        - FULLMAKTSKODE
+        - REGNSKAPSFORER
     system:
       type: string
       enum:
