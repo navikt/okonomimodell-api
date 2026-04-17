@@ -49,6 +49,8 @@ spec:
     outbound:
       external:
         - host: dmv43-scan.adeo.no
+          ports:
+            - port: 1521
 
   # envFrom:
   #   - secret: okonomimodell-api-oebs-credentials
