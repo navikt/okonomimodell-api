@@ -18,14 +18,14 @@ spec:
 
   liveness:
     path: /api/v1/actuator/health/liveness
-    initialDelay: 10
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 3
 
   readiness:
     path: /api/v1/actuator/health/readiness
-    initialDelay: 10
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 3
 
   resources:
