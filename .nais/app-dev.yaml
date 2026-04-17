@@ -47,10 +47,8 @@ spec:
     inbound:
       rules: []
     outbound:
-      external: []
-      # TODO: Add OeBS hostname here once brunnmursåpning is confirmed
-      # external:
-      #   - host: <oebs-dev-hostname>
+      external:
+        - host: dmv43-scan.adeo.no
 
   # envFrom:
   #   - secret: okonomimodell-api-oebs-credentials
