@@ -47,8 +47,31 @@ spec:
     inbound:
       rules: []
     outbound:
-      external:
-        - host: dmv43-scan.adeo.no
+      external: #todo: Trenger vi alle disse ip adressene, eller holder det med hostnavn?
+        - ipv4: 10.53.160.78  # dmv02db01.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.160.80  # dmv02db02.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.160.79  # dmv02db01-vip.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.160.81  # dmv02db02-vip.adeo.no
+          ports:
+            - port: 1521
+
+        - ipv4: 10.53.160.77  # dmv02-scan.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.160.76  # dmv02-scan.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.160.75  # dmv02-scan.adeo.no
+          ports:
+            - port: 1521
+
+        - host: dmv02-scan.adeo.no
           ports:
             - port: 1521
 
