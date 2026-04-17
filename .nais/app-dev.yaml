@@ -10,7 +10,7 @@ spec:
   port: 8080
 
   envFrom:
-    - secret: okonomimodell-api-u1
+    - secret: okonomimodell-api-t1
 
   prometheus:
     enabled: true
@@ -74,10 +74,6 @@ spec:
         - host: dmv02-scan.adeo.no
           ports:
             - port: 1521
-
-  # envFrom:
-  #   - secret: okonomimodell-api-oebs-credentials
-  # TODO: Uncomment once okonomimodell-api-oebs-credentials secret is created in team-oebs
 
   env:
     - name: SPRING_PROFILES_ACTIVE
