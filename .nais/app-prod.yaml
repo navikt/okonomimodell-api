@@ -9,6 +9,12 @@ spec:
   image: {{image}}
   port: 8080
 
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      tenant: nav.no
+
   prometheus:
     enabled: true
     path: /api/v1/actuator/prometheus
