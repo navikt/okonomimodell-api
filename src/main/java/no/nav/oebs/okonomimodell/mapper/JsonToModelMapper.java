@@ -1,6 +1,7 @@
 package no.nav.oebs.okonomimodell.mapper;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import org.openapitools.model.Relasjon;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
@@ -20,7 +21,8 @@ public class JsonToModelMapper {
     private static final String SEGMENT_TYPE = "segmentType";
 
     public List<Segment> mapJsonToSegments(List<String> segments) {
-        return segments.stream().map(this::mapJsonStringToSegment)
+        return segments.stream()
+                .map(this::mapJsonStringToSegment)
                 .toList();
     }
 
@@ -30,34 +32,34 @@ public class JsonToModelMapper {
             JsonNode segmentNode = jsonNode.isArray() ? jsonNode.get(0) : jsonNode; // Assuming the JSON string can be either an array or a single object
             return mapJsonToSegment(segmentNode);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JSON segment: " + jsonSegment, e);
+            throw new InvalidJsonException("Failed to parse JSON segment: " + jsonSegment);
         }
     }
 
-    public Segment mapJsonToSegment(JsonNode jsonSegment) {
+    public Segment mapJsonToSegment(JsonNode jsonSegment) throws  InvalidJsonException {
         Segment segment = new Segment();
         segment.segmentVerdi(jsonSegment.get(SEGMENT_VERDI).asString());
         segment.setBeskrivelse(jsonSegment.get(BESKRIVELSE).asString());
         segment.setSegmentType(mapSegmentType(jsonSegment.get(SEGMENT_TYPE).asString()));
 
-        if (jsonSegment.has(RELASJON) && !jsonSegment.get(RELASJON).isNull()) {
-            jsonSegment.get(RELASJON)
-                    .valueStream()
-                    .forEach(s -> segment.addRelasjonItem(mapJsonToRelation(s)));
-        }
+        List<Relasjon> relations = jsonSegment.get(RELASJON)
+                .valueStream()
+                .map(this::mapJsonToRelation)
+                .toList();
+        segment.setRelasjon(relations);
+
         return segment;
     }
 
-    private SegmentType mapSegmentType(String segmentType) {
+    private SegmentType mapSegmentType(String segmentType) throws InvalidJsonException{
         try {
             return SegmentType.valueOf(segmentType);
         } catch (IllegalArgumentException e) {
-            log.error("Contains unknown segment type: " + segmentType);
-            return null;
+            throw new InvalidJsonException("Unknown segment type: " + segmentType);
         }
     }
 
-    private Relasjon mapJsonToRelation(JsonNode jsonRelation) {
+    private Relasjon mapJsonToRelation(JsonNode jsonRelation) throws InvalidJsonException{
         Relasjon relation = new Relasjon();
         relation.setSegmentType(mapSegmentType(jsonRelation.get(SEGMENT_TYPE).asString()));
         relation.setSegmentVerdi(jsonRelation.get(SEGMENT_VERDI).asString());

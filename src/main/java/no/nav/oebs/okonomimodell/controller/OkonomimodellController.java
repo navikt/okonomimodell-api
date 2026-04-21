@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.controller;
 
+import lombok.AllArgsConstructor;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
 import org.openapitools.api.SegmenterApi;
 import org.openapitools.model.Segment;
@@ -10,14 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 public class OkonomimodellController implements SegmenterApi {
 
     private final OkonomimodellService okonomimodellService;
-
-    public OkonomimodellController(OkonomimodellService okonomimodellService) {
-        this.okonomimodellService = okonomimodellService;
-    }
 
     @Override
     public ResponseEntity<List<Segment>> segments(System system) {

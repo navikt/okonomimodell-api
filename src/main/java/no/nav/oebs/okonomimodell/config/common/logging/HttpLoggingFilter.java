@@ -35,7 +35,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 	private final KallLoggJpaRepository kallLoggJpaRepository;
 
 	@Override
-	protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
+    public void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
 			throws ServletException, IOException {
 
 		long startTime = System.currentTimeMillis();
