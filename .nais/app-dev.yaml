@@ -9,6 +9,12 @@ spec:
   image: {{image}}
   port: 8080
 
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      tenant: trygdeetaten.no
+
   envFrom:
     - secret: okonomimodell-api-t1
 
