@@ -80,7 +80,6 @@ spec:
         - host: dmv02-scan.adeo.no
           ports:
             - port: 1521
-
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: dev
