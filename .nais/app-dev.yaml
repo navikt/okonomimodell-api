@@ -54,19 +54,25 @@ spec:
       rules: []
     outbound:
       external:
-        - ipv4: 10.53.160.78  # dmv43db01.adeo.no
+        - ipv4: 10.53.104.43  # dmv43db01.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.160.80  # dmv43db02.adeo.no
+        - ipv4: 10.53.104.44  # dmv43db02.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.160.77  # dmv43-scan.adeo.no
+        - ipv4: 10.53.104.45  # dmv43-scan.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.160.76  # dmv43-scan.adeo.no
+        - ipv4: 10.53.104.46  # dmv43-scan.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.160.75  # dmv43-scan.adeo.no
+        - ipv4: 10.53.104.47  # dmv43-scan.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.104.48  # dmv43-scan.adeo.no
+          ports:
+            - port: 1521
+        - ipv4: 10.53.104.49  # dmv43-scan.adeo.no
           ports:
             - port: 1521
 
