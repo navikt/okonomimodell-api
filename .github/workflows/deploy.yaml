@@ -60,8 +60,8 @@ jobs:
         with:
           team: team-oebs
 
-  deploy-dev:
-    name: Deploy to dev
+  deploy-t1:
+    name: Deploy t1 instance
     needs: build
     if: github.event_name != 'pull_request' && github.ref_name == 'main'
     runs-on: ubuntu-latest
@@ -74,12 +74,29 @@ jobs:
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: .nais/app-dev.yaml
+          RESOURCE: .nais/app-t1.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+
+  deploy-q1:
+    name: Deploy q1 instance
+    needs: [build, deploy-t1]
+    if: github.event_name != 'pull_request' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/app-q1.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
   deploy-prod:
     name: Deploy to prod
-    needs: [build, deploy-dev]
+    needs: [build, deploy-t1, deploy-q1]
     if: github.event_name == 'workflow_dispatch' && inputs.deploy_prod == true
     runs-on: ubuntu-latest
     permissions:

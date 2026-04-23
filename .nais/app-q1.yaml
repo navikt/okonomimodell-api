@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: okonomimodell-api
+  name: okonomimodell-api-q1
   namespace: team-oebs
   labels:
     team: team-oebs
@@ -16,7 +16,7 @@ spec:
       tenant: trygdeetaten.no
 
   envFrom:
-    - secret: okonomimodell-api-t1
+    - secret: okonomimodell-api-q1
 
   prometheus:
     enabled: true
@@ -47,32 +47,37 @@ spec:
     cpuThresholdPercentage: 80
 
   ingresses:
-    - https://okonomimodell-api.intern.dev.nav.no
+    - https://okonomimodell-api-q1.intern.dev.nav.no
 
   accessPolicy:
     inbound:
       rules: []
     outbound:
       external:
-        - ipv4: 10.53.104.43  # dmv43db01.adeo.no
+        - ipv4: 10.53.161.78  # dmv08db01.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.44  # dmv43db02.adeo.no
+        - ipv4: 10.53.161.80  # dmv08db02.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.45  # dmv43-scan.adeo.no
+        - ipv4: 10.53.161.79  # dmv08db01-vip.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.46  # dmv43-scan.adeo.no
+        - ipv4: 10.53.161.81  # dmv08db02-vip.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.47  # dmv43-scan.adeo.no
+
+        - ipv4: 10.53.161.77  # dmv08-scan.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.48  # dmv43-scan.adeo.no
+        - ipv4: 10.53.161.76  # dmv08-scan.adeo.no
           ports:
             - port: 1521
-        - ipv4: 10.53.104.49  # dmv43-scan.adeo.no
+        - ipv4: 10.53.161.75  # dmv08-scan.adeo.no
+          ports:
+            - port: 1521
+
+        - host: dmv08-scan.adeo.no
           ports:
             - port: 1521
 
