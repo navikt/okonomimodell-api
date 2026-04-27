@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 
 @SpringBootApplication
-@EnableJwtTokenValidation
+@EnableJwtTokenValidation(ignore = {"org.springdoc", "org.springframework"})
 public class OkonomimodellApplication {
 
 	public static void main(String[] args) {
