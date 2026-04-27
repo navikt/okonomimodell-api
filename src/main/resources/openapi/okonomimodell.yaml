@@ -57,6 +57,7 @@ paths:
   /segmenter:
     get:
       operationId: segments
+      security: []
       summary: Henter alle segmenter
       parameters:
         - name: system
@@ -86,6 +87,8 @@ paths:
   /segmenter/{segmentType}:
     get:
       operationId: segmentsBySegmentType
+      security:
+        - azure: []
       summary: Henter segmenter for et gitt segmentType
       parameters:
         - name: segmentType

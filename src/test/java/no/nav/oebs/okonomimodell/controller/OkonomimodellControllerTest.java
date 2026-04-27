@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.controller;
 
+import no.nav.oebs.okonomimodell.TestApplication;
 import no.nav.oebs.okonomimodell.config.common.logging.HttpLoggingFilter;
 import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = TestApplication.class)
 @AutoConfigureMockMvc
 class OkonomimodellControllerTest {
 
