@@ -26,6 +26,8 @@ class McdFilterTest {
 
     private MdcFilter mdcFilter;
 
+    private static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
+    
     @BeforeEach
     void setUp() {
         mdcFilter = new MdcFilter();
@@ -57,6 +59,37 @@ class McdFilterTest {
         }).when(filterChain).doFilter(any(), any());
 
         mdcFilter.doFilterInternal(request, response, filterChain);
+    }
+
+    @Test
+    void doFilterInternal_shouldUseIncomingCorrelationIdWhenHeaderIsPresent() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(CORRELATION_ID_HEADER, "existing-correlation-id");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        doAnswer(invocation -> {
+            assertEquals("existing-correlation-id", MDC.get(MdcOperations.MDC_CORRELATION_ID));
+            return null;
+        }).when(filterChain).doFilter(any(), any());
+
+        mdcFilter.doFilterInternal(request, response, filterChain);
+
+        assertEquals("existing-correlation-id", response.getHeader(CORRELATION_ID_HEADER));
+    }
+
+    @Test
+    void doFilterInternal_shouldSetGeneratedCorrelationIdInResponseHeader() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        doAnswer(invocation -> {
+            assertEquals(MDC.get(MdcOperations.MDC_CORRELATION_ID), response.getHeader(CORRELATION_ID_HEADER));
+            return null;
+        }).when(filterChain).doFilter(any(), any());
+
+        mdcFilter.doFilterInternal(request, response, filterChain);
+
+        assertNotNull(response.getHeader(CORRELATION_ID_HEADER));
     }
 
     @Test
