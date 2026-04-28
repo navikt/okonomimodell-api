@@ -36,7 +36,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		return request.getServletPath().startsWith("/actuator");
+		return request.getServletPath().contains("/actuator");
 	}
 
 	@Override
