@@ -13,14 +13,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final String ERROR = "error";
+    private static final String MESSAGE = "message";
+    private static final String STATUS = "status";
+    private static final String TIMESTAMP = "timestamp";
+
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleInvalidJsonException(
             InvalidJsonException ex) {
         Map<String, Object> respons = new HashMap<>();
-        respons.put("error", "Invalid JSON retrieved from database");
-        respons.put("message", ex.getMessage());
-        respons.put("status", 500);
-        respons.put("timestamp", LocalDateTime.now());
+        respons.put(ERROR, "Invalid JSON retrieved from database");
+        respons.put(MESSAGE, ex.getMessage());
+        respons.put(STATUS, 500);
+        respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -28,10 +33,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleJwtTokenMissingException(
             JwtTokenMissingException ex) {
         Map<String, Object> respons = new HashMap<>();
-        respons.put("error", "Missing token to access endpoint");
-        respons.put("message", ex.getMessage());
-        respons.put("status", 401);
-        respons.put("timestamp", LocalDateTime.now());
+        respons.put(ERROR, "Missing token to access endpoint");
+        respons.put(MESSAGE, ex.getMessage());
+        respons.put(STATUS, 401);
+        respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.UNAUTHORIZED);
     }
 
@@ -39,10 +44,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleJwtTokenUnauthorizedException(
             JwtTokenUnauthorizedException ex) {
         Map<String, Object> respons = new HashMap<>();
-        respons.put("error", "Unauthorized");
-        respons.put("message", ex.getMessage());
-        respons.put("status", 401);
-        respons.put("timestamp", LocalDateTime.now());
+        respons.put(ERROR, "Unauthorized");
+        respons.put(MESSAGE, ex.getMessage());
+        respons.put(STATUS, 401);
+        respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.UNAUTHORIZED);
     }
 
@@ -50,10 +55,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception ex) {
         Map<String, Object> respons = new HashMap<>();
-        respons.put("error", "An unexpected error occurred");
-        respons.put("message", ex.getMessage());
-        respons.put("status", 500);
-        respons.put("timestamp", LocalDateTime.now());
+        respons.put(ERROR, "An unexpected error occurred");
+        respons.put(MESSAGE, ex.getMessage());
+        respons.put(STATUS, 500);
+        respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
