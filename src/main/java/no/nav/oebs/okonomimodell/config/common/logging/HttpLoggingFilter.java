@@ -35,6 +35,11 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 	private final KallLoggJpaRepository kallLoggJpaRepository;
 
 	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		return request.getRequestURI().startsWith("/actuator");
+	}
+
+	@Override
     public void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
 			throws ServletException, IOException {
 
