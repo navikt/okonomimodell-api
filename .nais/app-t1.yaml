@@ -51,7 +51,10 @@ spec:
 
   accessPolicy:
     inbound:
-      rules: []
+      rules:
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
     outbound:
       external:
         - ipv4: 10.53.104.43  # dmv43db01.adeo.no
