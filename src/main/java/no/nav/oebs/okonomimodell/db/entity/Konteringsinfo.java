@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "XXRTV_GL_KONTERINGSINFO_V")
+@Table(name = "XXRTV_GL_KONTERINGSINFO_V", schema = "APPS")
 public class Konteringsinfo {
 
     @Id
