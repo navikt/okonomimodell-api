@@ -137,7 +137,10 @@ class McdFilterTest {
 
         mdcFilter.doFilterInternal(request, response, filterChain);
 
-        assertNotNull(response.getHeader(CORRELATION_ID_HEADER));
+        String returned = response.getHeader(CORRELATION_ID_HEADER);
+        assertNotNull(returned);
+        assertFalse(returned.contains("\r"));
+        assertFalse(returned.contains("\n"));
     }
 
     @Test

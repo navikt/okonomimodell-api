@@ -46,7 +46,7 @@ public class MdcFilter extends OncePerRequestFilter {
 	private String sanitize(String value) {
 		String sanitized = value.replaceAll(CONTROL_CHARS_PATTERN, "");
 		if (sanitized.length() > CORRELATION_ID_MAX_LENGTH) {
-			sanitized = sanitized.substring(0, CORRELATION_ID_MAX_LENGTH);
+			sanitized = sanitized.substring(0, CORRELATION_ID_MAX_LENGTH).trim();
 		}
 		if (sanitized.isBlank()) {
 			return MdcOperations.generateCorrelationId();
