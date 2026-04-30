@@ -8,6 +8,13 @@ servers:
     description: dev environment
 
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     segmentType:
       type: string
@@ -57,7 +64,8 @@ paths:
   /segmenter:
     get:
       operationId: segments
-      security: []
+      security:
+        - bearerAuth: [ ]
       summary: Henter alle segmenter
       parameters:
         - name: system
@@ -87,8 +95,6 @@ paths:
   /segmenter/{segmentType}:
     get:
       operationId: segmentsBySegmentType
-      security:
-        - azure: []
       summary: Henter segmenter for et gitt segmentType
       parameters:
         - name: segmentType
