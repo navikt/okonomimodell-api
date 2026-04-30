@@ -26,7 +26,7 @@ class McdFilterTest {
 
     private MdcFilter mdcFilter;
 
-    private static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
+    private static final String CORRELATION_ID_HEADER = MdcFilter.CORRELATION_ID_HEADER;
     
     @BeforeEach
     void setUp() {
@@ -100,6 +100,44 @@ class McdFilterTest {
         mdcFilter.doFilterInternal(request, response, filterChain);
 
         assertNull(MDC.get(MdcOperations.MDC_CORRELATION_ID));
+    }
+
+    @Test
+    void doFilterInternal_shouldSanitizeCorrelationIdContainingControlChars() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(CORRELATION_ID_HEADER, "valid-id\r\nX-Injected: evil");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        mdcFilter.doFilterInternal(request, response, filterChain);
+
+        String returned = response.getHeader(CORRELATION_ID_HEADER);
+        assertNotNull(returned);
+        assertFalse(returned.contains("\r"));
+        assertFalse(returned.contains("\n"));
+    }
+
+    @Test
+    void doFilterInternal_shouldTruncateOversizedCorrelationId() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(CORRELATION_ID_HEADER, "a".repeat(256));
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        mdcFilter.doFilterInternal(request, response, filterChain);
+
+        String returned = response.getHeader(CORRELATION_ID_HEADER);
+        assertNotNull(returned);
+        assertTrue(returned.length() <= 128);
+    }
+
+    @Test
+    void doFilterInternal_shouldGenerateNewIdWhenHeaderContainsOnlyControlChars() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(CORRELATION_ID_HEADER, "\r\n");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        mdcFilter.doFilterInternal(request, response, filterChain);
+
+        assertNotNull(response.getHeader(CORRELATION_ID_HEADER));
     }
 
     @Test
