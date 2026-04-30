@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: okonomimodell-api
+  name: okonomimodell-api-t1
   namespace: team-oebs
   labels:
     team: team-oebs
@@ -47,11 +47,14 @@ spec:
     cpuThresholdPercentage: 80
 
   ingresses:
-    - https://okonomimodell-api.intern.dev.nav.no
+    - https://okonomimodell-api-t1.intern.dev.nav.no
 
   accessPolicy:
     inbound:
-      rules: []
+      rules:
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
     outbound:
       external:
         - ipv4: 10.53.104.43  # dmv43db01.adeo.no
