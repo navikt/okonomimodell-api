@@ -13,13 +13,13 @@ public interface SegmentJpaRepository extends JpaRepository<Konteringsinfo, Long
 
     @Query(value = """
             SELECT JSON_PAYLOAD
-            FROM XXRTV_GL_KONTERINGSINFO_V
+            FROM APPS.XXRTV_GL_KONTERINGSINFO_V
              """, nativeQuery = true)
     List<String> findAllAsJson();
 
     @Query(value = """
             SELECT JSON_PAYLOAD
-            FROM XXRTV_GL_KONTERINGSINFO_V 
+            FROM APPS.XXRTV_GL_KONTERINGSINFO_V 
             WHERE segment_type = :segmentType
             """, nativeQuery = true)
     List<String> findBySegmentType(@Param("segmentType") String segmentType);
