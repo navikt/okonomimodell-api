@@ -7,6 +7,9 @@ servers:
   - url: 'https://okonomimodell-api.intern.dev.nav.no/api/v1'
     description: dev environment
 
+security:
+  - bearerAuth: []
+
 components:
 
   securitySchemes:
@@ -65,7 +68,7 @@ paths:
     get:
       operationId: segments
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       summary: Henter alle segmenter
       parameters:
         - name: system
@@ -96,6 +99,7 @@ paths:
     get:
       operationId: segmentsBySegmentType
       summary: Henter segmenter for et gitt segmentType
+      security: []
       parameters:
         - name: segmentType
           in: path
