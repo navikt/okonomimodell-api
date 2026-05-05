@@ -20,14 +20,14 @@ public class OkonomimodellController implements SegmenterApi {
     private final OkonomimodellService okonomimodellService;
 
     @Override
-    @Unprotected
+    @Protected
     public ResponseEntity<List<Segment>> segments(System system) {
         List<Segment> segments = okonomimodellService.getSegments(system);
         return ResponseEntity.ok(segments);
     }
 
     @Override
-    @Protected
+    @Unprotected
     public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, System system) {
         List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, system);
         return ResponseEntity.ok(segmentBySegmentType);
