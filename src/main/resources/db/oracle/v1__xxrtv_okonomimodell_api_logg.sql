@@ -50,6 +50,7 @@ SELECT xxrtv.xxrtv_okonomimodell_api_seq.nextval
 INTO   :new.kall_logg_id
 FROM   DUAL;
 END;
+/
 
 -- Check-constraint som sørger for at type kun kan være 'PLSQL' eller 'REST'.
 ALTER TABLE xxrtv.xxrtv_okonomimodell_api_logg
