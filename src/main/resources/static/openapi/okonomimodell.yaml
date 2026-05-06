@@ -6,8 +6,8 @@ info:
 servers:
   - url: 'http://localhost:8080/api/v1'
     description: local environment
-  - url: 'https://okonomimodell-api.intern.dev.nav.no/api/v1'
-    description: dev environment
+  - url: 'https://okonomimodell-api-t1.intern.dev.nav.no/api/v1'
+    description: test environment
 
 security:
   - BearerAuth: []
