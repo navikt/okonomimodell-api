@@ -23,4 +23,12 @@ public interface SegmentJpaRepository extends JpaRepository<Konteringsinfo, Long
             WHERE segment_type = :segmentType
             """, nativeQuery = true)
     List<String> findBySegmentType(@Param("segmentType") String segmentType);
+
+    @Query(value = """
+            SELECT JSON_PAYLOAD
+            FROM APPS.XXRTV_GL_KONTERINGSINFO_V
+            WHERE segment_type = :segmentType
+            AND last_update_date >= TO_DATE(:lastUpdateDate, 'YYYY-MM-DD')
+            """, nativeQuery = true)
+    List<String> findByLastUpdatedAndSegmentType(@Param("lastUpdateDate") String lastUpdateDate, @Param("segmentType") String segmentType);
 }

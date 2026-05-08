@@ -8,6 +8,7 @@ import org.openapitools.model.SegmentType;
 import org.openapitools.model.System;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,10 +24,11 @@ public class OkonomimodellService {
         );
     }
 
-    public List<Segment> getSegmentsBySegmentType(SegmentType segmentType, System system) {
-        return jsonToModelMapper.mapJsonToSegments(
-                segmentJpaRepository.findBySegmentType(segmentType.toString())
-        );
+    public List<Segment> getSegmentsBySegmentType(SegmentType segmentType, LocalDate lastUpdated, System system) {
+        var segments = lastUpdated != null
+                ? segmentJpaRepository.findByLastUpdatedAndSegmentType(lastUpdated.toString(), segmentType.toString())
+                : segmentJpaRepository.findBySegmentType(segmentType.toString());
+        return jsonToModelMapper.mapJsonToSegments(segments);
     }
 
 }

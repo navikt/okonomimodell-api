@@ -108,6 +108,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/segmentType'
+        - name: oppdatertEtter
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
         - name: system
           in: query
           required: false
@@ -131,6 +137,8 @@ paths:
                       segmentVerdi: "5678"
         '404':
           description: Fant ikke segmenter for gitt segmentType
+        '400':
+          description: Ugyldig input
         '500':
           description: Internal Server Error
 
