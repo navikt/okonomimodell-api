@@ -129,13 +129,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 		byte[] buf = wrappedRequest.getContentAsByteArray();
 		if (buf.length > 0) {
 			String payload;
-
-			try {
-				payload = new String(buf, wrappedRequest.getCharacterEncoding());
-			} catch (IOException e) {
-				payload = "[unknown]";
-			}
-
+			payload = new String(buf, StandardCharsets.UTF_8);
 			builder.append(payload);
 		}
 	}
@@ -175,7 +169,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 			String payload;
 
 			try {
-				payload = new String(buf, wrappedResponse.getCharacterEncoding());
+				payload = new String(buf, StandardCharsets.UTF_8);
 
 				// Viktig! Ellers blir det ingen responsdata igjen å returnere til konsumenten...
 				wrappedResponse.copyBodyToResponse();
