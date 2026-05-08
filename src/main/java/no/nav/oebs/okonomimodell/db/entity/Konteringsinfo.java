@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -26,4 +28,7 @@ public class Konteringsinfo {
 
     @Column(name = "JSON_PAYLOAD", columnDefinition = "CLOB")
     private String jsonPayload;
+
+    @Column(name = "LAST_UPDATE_DATE")
+    private LocalDateTime lastUpdateDate;
 }

@@ -11,6 +11,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ class OkonomimodellControllerTest {
     @Test
     void segments_return200WhenSegmentlist() throws Exception {
 
-        when(okonomimodellService.getSegmentsBySegmentType(any(),any())).thenReturn(List.of());
+        when(okonomimodellService.getSegmentsBySegmentType(any(),any(), any())).thenReturn(List.of());
 
         mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN"))
                 .andExpect(status().isOk())
@@ -45,7 +46,7 @@ class OkonomimodellControllerTest {
 
     @Test
     void segments_return500WhenInvalidJson() throws Exception {
-        when(okonomimodellService.getSegmentsBySegmentType(any(), any()))
+        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
                 .thenThrow(new InvalidJsonException("ugyldig JSON"));
 
         mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN"))
@@ -59,5 +60,14 @@ class OkonomimodellControllerTest {
 
         mockMvc.perform(get("/segmenter"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void segments_return400WhenInvalidDate() throws Exception {
+        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
+                .thenThrow(new MethodArgumentTypeMismatchException("lastUpdated", String.class, "lastUpdated", null, new IllegalArgumentException("Ugyldig datoformat")));
+
+        mockMvc.perform(get("/segmenter/ARTSKONTO?oppdatertEtter=20-003-2024"))
+                .andExpect(status().isBadRequest());
     }
 }

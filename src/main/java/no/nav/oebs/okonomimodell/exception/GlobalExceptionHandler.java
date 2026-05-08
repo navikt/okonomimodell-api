@@ -5,6 +5,7 @@ import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnaut
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -60,6 +61,22 @@ public class GlobalExceptionHandler {
         respons.put(STATUS, 500);
         respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex) {
+        Map<String, Object> respons = new HashMap<>();
+        String parameterName = ex.getPropertyName();
+        respons.put(ERROR, "Invalid argument provided for parameter: " + parameterName);
+        if (parameterName.contains("oppdatertEtter")) {
+            respons.put(MESSAGE, "Expected a date in the format YYYY-MM-DD for parameter: " + parameterName);
+        } else {
+            respons.put(MESSAGE, ex.getMessage());
+        }
+        respons.put(STATUS, 400);
+        respons.put(TIMESTAMP, LocalDateTime.now());
+        return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.BAD_REQUEST);
     }
 
 }
