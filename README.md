@@ -63,9 +63,9 @@ Alle merge commits squashes inn i main, så tittelen bør reflektere de viktigst
 Dette gjør at historikken kan kobles direkte til hvilke Jira-saker saken omhandler.
 
 ## Dokumentasjon
-- [Swagger t1](https://okonomimodell-api-t1.intern.dev.nav.no/api/v1/swagger-ui.html)
-- [Swagger q1](https://okonomimodell-api-q1.intern.dev.nav.no/api/v1/swagger-ui.html)
-- [Swagger prod](https://okonomimodell-api.intern.nav.no/api/v1/swagger-ui.html)
+- [Swagger t1](https://okonomimodell-api-t1.ekstern.dev.nav.no/api/v1/swagger-ui.html)
+- [Swagger q1](https://okonomimodell-api-q1.ekstern.dev.nav.no/api/v1/swagger-ui.html)
+- [Swagger prod](https://okonomimodell-api.nav.no/api/v1/swagger-ui.html)
 
 
 - [SonarCloud](https://sonarcloud.io/project/overview?id=navikt_okonomimodell-api)

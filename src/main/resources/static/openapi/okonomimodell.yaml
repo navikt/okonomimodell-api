@@ -4,10 +4,12 @@ info:
   description: Økonomimodell API
   version: 1.0.0
 servers:
+  - url: 'https://okonomimodell-api-t1.ekstern.dev.nav.no/api/v1'
+    description: test environment
   - url: 'http://localhost:8080/api/v1'
     description: local environment
-  - url: 'https://okonomimodell-api-t1.intern.dev.nav.no/api/v1'
-    description: test environment
+  - url: 'https://okonomimodell-api-q1.ekstern.dev.nav.no/api/v1'
+    description: preprod environment
 
 security:
   - BearerAuth: []
