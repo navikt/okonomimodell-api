@@ -11,6 +11,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -34,21 +35,39 @@ class OkonomimodellControllerTest {
     private HttpLoggingFilter httpLoggingFilter;
 
     @Test
-    void segments_returnerer200MedSegmentliste() throws Exception {
+    void segments_return200WhenSegmentlist() throws Exception {
 
-        when(okonomimodellService.getSegments(any())).thenReturn(List.of());
+        when(okonomimodellService.getSegmentsBySegmentType(any(),any(), any())).thenReturn(List.of());
 
-        mockMvc.perform(get("/segmenter?system=LONN"))
+        mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
 
     @Test
-    void segments_returnerer500VedInvalidJson() throws Exception {
-        when(okonomimodellService.getSegments(any()))
+    void segments_return500WhenInvalidJson() throws Exception {
+        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
                 .thenThrow(new InvalidJsonException("ugyldig JSON"));
 
-        mockMvc.perform(get("/segmenter?system=OB"))
+        mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN"))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void segments_return401WhenMissingToken() throws Exception {
+        when(okonomimodellService.getSegments(any()))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/segmenter"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void segments_return400WhenInvalidDate() throws Exception {
+        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
+                .thenThrow(new MethodArgumentTypeMismatchException("lastUpdated", String.class, "lastUpdated", null, new IllegalArgumentException("Ugyldig datoformat")));
+
+        mockMvc.perform(get("/segmenter/ARTSKONTO?oppdatertEtter=20-003-2024"))
+                .andExpect(status().isBadRequest());
     }
 }

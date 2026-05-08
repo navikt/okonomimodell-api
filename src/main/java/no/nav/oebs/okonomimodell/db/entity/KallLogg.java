@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Table(name = "XXRTV_OKONOMIMODELL_API_LOGG")
+@Table(name = "XXRTV_OKONOMIMODELL_API_LOGG", schema = "XXRTV")
 public class KallLogg {
 
 	public static final String RETNING_INN = "INN";
@@ -59,6 +59,9 @@ public class KallLogg {
 
 	@Column(name = "RESPONSE")
 	private String response;
+
+	@Column(name = "RESPONSE_OEBS")
+	private String responseOebs;
 
 	@Column(name = "LOGGINFO")
 	private String logginfo;

@@ -11,6 +11,7 @@ import org.openapitools.model.System;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,16 +21,16 @@ public class OkonomimodellController implements SegmenterApi {
     private final OkonomimodellService okonomimodellService;
 
     @Override
-    @Unprotected
+    @Protected
     public ResponseEntity<List<Segment>> segments(System system) {
         List<Segment> segments = okonomimodellService.getSegments(system);
         return ResponseEntity.ok(segments);
     }
 
     @Override
-    @Protected
-    public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, System system) {
-        List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, system);
+    @Unprotected
+    public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, LocalDate oppdatertEtter, System system) {
+        List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, oppdatertEtter, system);
         return ResponseEntity.ok(segmentBySegmentType);
     }
 }

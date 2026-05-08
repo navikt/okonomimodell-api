@@ -1,13 +1,25 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: Økonomimodell API
   description: Økonomimodell API
   version: 1.0.0
 servers:
-  - url: 'https://okonomimodell-api.intern.dev.nav.no/api/v1'
-    description: dev environment
+  - url: 'http://localhost:8080/api/v1'
+    description: local environment
+  - url: 'https://okonomimodell-api-t1.intern.dev.nav.no/api/v1'
+    description: test environment
+
+security:
+  - BearerAuth: []
 
 components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     segmentType:
       type: string
@@ -57,7 +69,8 @@ paths:
   /segmenter:
     get:
       operationId: segments
-      security: []
+      security:
+        - BearerAuth: []
       summary: Henter alle segmenter
       parameters:
         - name: system
@@ -87,15 +100,20 @@ paths:
   /segmenter/{segmentType}:
     get:
       operationId: segmentsBySegmentType
-      security:
-        - azure: []
       summary: Henter segmenter for et gitt segmentType
+      security: []
       parameters:
         - name: segmentType
           in: path
           required: true
           schema:
             $ref: '#/components/schemas/segmentType'
+        - name: oppdatertEtter
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
         - name: system
           in: query
           required: false
@@ -119,6 +137,8 @@ paths:
                       segmentVerdi: "5678"
         '404':
           description: Fant ikke segmenter for gitt segmentType
+        '400':
+          description: Ugyldig input
         '500':
           description: Internal Server Error
 

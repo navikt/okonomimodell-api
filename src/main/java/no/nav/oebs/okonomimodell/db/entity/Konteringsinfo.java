@@ -7,11 +7,13 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "XXRTV_GL_KONTERINGSINFO_V")
+@Table(name = "XXRTV_GL_KONTERINGSINFO_V", schema = "APPS")
 public class Konteringsinfo {
 
     @Id
@@ -26,4 +28,7 @@ public class Konteringsinfo {
 
     @Column(name = "JSON_PAYLOAD", columnDefinition = "CLOB")
     private String jsonPayload;
+
+    @Column(name = "LAST_UPDATE_DATE")
+    private LocalDateTime lastUpdateDate;
 }

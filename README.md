@@ -43,8 +43,14 @@ Det kan være lurt å enable **Global Secure Access Client** før man kobler til
 Det er satt opp enhetstester med JUnit og Mockito, men det er ikke satt opp noen integrasjonstester.
 
 ## Alarmering og Overvåkning
-Det er ikke satt opp noen alarmering eller overvåkning av tjenesten. Driftsproblemer må derfor fanges opp av brukere som opplever feil ved kall mot API-et,
-og det er ingen automatiske alarmer som fanger opp feil i tjenesten.
+Det er ikke satt opp noen alarmering, driftsproblemer må derfor fanges opp av brukere som opplever feil ved kall mot API-et
+eller gjennom opplevde problemer i OeBS som kan knyttes til API-et.
+
+Det er satt opp standard overvåkning av applikasjonene gjennom grafana dashboards:
+
+- [Grafana dashbboard for t1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-t1?namespace=team-oebs&environment=dev) 
+- [Grafana dashbboard for q1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-q1?namespace=team-oebs&environment=dev)
+- [Grafana dashbboard for prod](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api?namespace=team-oebs&environment=prod)
 
 ## Deployment 
 Alle kodeendringer skal gjøres ved å opprette en pull request, og det er ikke tillatt å pushe direkte til main branch.
