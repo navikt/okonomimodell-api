@@ -18,6 +18,11 @@ spec:
   envFrom:
     - secret: okonomimodell-api-q1
 
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+
   prometheus:
     enabled: true
     path: /api/v1/actuator/prometheus

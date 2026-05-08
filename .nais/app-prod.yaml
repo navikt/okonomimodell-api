@@ -15,6 +15,11 @@ spec:
       allowAllUsers: true
       tenant: nav.no
 
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+
   prometheus:
     enabled: true
     path: /api/v1/actuator/prometheus
