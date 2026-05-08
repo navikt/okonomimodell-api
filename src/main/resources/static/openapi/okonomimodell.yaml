@@ -103,7 +103,8 @@ paths:
     get:
       operationId: segmentsBySegmentType
       summary: Henter segmenter for et gitt segmentType
-      security: []
+      security:
+        - BearerAuth: []
       parameters:
         - name: segmentType
           in: path
