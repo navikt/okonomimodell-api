@@ -27,11 +27,14 @@ class HttpLoggingFilterTest {
     @Mock
     private FilterChain filterChain;
 
+    @Mock
+    private OebsResponseHolder oebsResponseHolder;
+
     private HttpLoggingFilter httpLoggingFilter;
 
     @BeforeEach
     void setUp() {
-        httpLoggingFilter = new HttpLoggingFilter(kallLoggJpaRepository);
+        httpLoggingFilter = new HttpLoggingFilter(kallLoggJpaRepository, oebsResponseHolder);
     }
 
     @Test
