@@ -47,7 +47,6 @@ Det er ikke satt opp noen alarmering, driftsproblemer må derfor fanges opp av b
 eller gjennom opplevde problemer i OeBS som kan knyttes til API-et.
 
 Det er satt opp standard overvåkning av applikasjonene gjennom grafana dashboards:
-
 - [Grafana dashbboard for t1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-t1?namespace=team-oebs&environment=dev) 
 - [Grafana dashbboard for q1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-q1?namespace=team-oebs&environment=dev)
 - [Grafana dashbboard for prod](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api?namespace=team-oebs&environment=prod)
