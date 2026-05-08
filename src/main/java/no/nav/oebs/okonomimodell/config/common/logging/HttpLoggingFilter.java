@@ -20,6 +20,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.Map;
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
 	private final KallLoggJpaRepository kallLoggJpaRepository;
+	private final OebsResponseHolder oebsResponseHolder;
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -61,6 +63,13 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 			String formattedRequest = formatRequest(requestToUse);
 			String formattedResponse = formatResponse(responseToUse);
 
+			//Retrieve raw response from oebs to logg table
+			List<String> rawResponseOebs = oebsResponseHolder.get();
+			String responseOebs = rawResponseOebs != null
+					? String.join(",", rawResponseOebs)
+					: null;
+			oebsResponseHolder.clear();
+
 			long endTime = System.currentTimeMillis();
 
 			KallLogg kallLogg = KallLogg.builder() //
@@ -74,6 +83,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 					.kalltid(endTime - startTime) //
 					.request(formattedRequest) //
 					.response(formattedResponse) //
+					.responseOebs(responseOebs) //
 					.logginfo(requestToUse.getParameter("system"))
 					.build();
 
@@ -119,13 +129,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 		byte[] buf = wrappedRequest.getContentAsByteArray();
 		if (buf.length > 0) {
 			String payload;
-
-			try {
-				payload = new String(buf, wrappedRequest.getCharacterEncoding());
-			} catch (IOException e) {
-				payload = "[unknown]";
-			}
-
+			payload = new String(buf, StandardCharsets.UTF_8);
 			builder.append(payload);
 		}
 	}
@@ -165,7 +169,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 			String payload;
 
 			try {
-				payload = new String(buf, wrappedResponse.getCharacterEncoding());
+				payload = new String(buf, StandardCharsets.UTF_8);
 
 				// Viktig! Ellers blir det ingen responsdata igjen å returnere til konsumenten...
 				wrappedResponse.copyBodyToResponse();

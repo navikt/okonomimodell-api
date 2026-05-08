@@ -28,7 +28,7 @@ public class OkonomimodellController implements SegmenterApi {
     }
 
     @Override
-    @Unprotected
+    @Protected
     public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, LocalDate oppdatertEtter, System system) {
         List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, oppdatertEtter, system);
         return ResponseEntity.ok(segmentBySegmentType);
