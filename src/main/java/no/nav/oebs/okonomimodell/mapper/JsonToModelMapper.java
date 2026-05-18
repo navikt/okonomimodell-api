@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.mapper;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import org.openapitools.model.Relasjon;
@@ -13,12 +14,15 @@ import java.util.List;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class JsonToModelMapper {
 
     private static final String RELASJON = "relasjon";
     private static final String SEGMENT_VERDI = "segmentVerdi";
     private static final String BESKRIVELSE = "beskrivelse";
     private static final String SEGMENT_TYPE = "segmentType";
+
+    private final MockDataGenerator mockDataGenerator;
 
     public List<Segment> mapJsonToSegments(List<String> segments) {
         return segments.stream()
@@ -41,6 +45,12 @@ public class JsonToModelMapper {
         segment.segmentVerdi(jsonSegment.get(SEGMENT_VERDI).asString());
         segment.setBeskrivelse(jsonSegment.get(BESKRIVELSE).asString());
         segment.setSegmentType(mapSegmentType(jsonSegment.get(SEGMENT_TYPE).asString()));
+
+        //todo: refactor when all data is available in database view
+        MockDataGenerator.MockSegment mockSegment = mockDataGenerator.getRandomMockSegment();
+        segment.setAktiv(mockSegment.aktiv());
+        segment.setStartDato(mockSegment.fromDate());
+        segment.setSluttDato(mockSegment.toDate());
 
         List<Relasjon> relations = jsonSegment.get(RELASJON)
                 .valueStream()
