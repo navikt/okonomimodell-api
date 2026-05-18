@@ -13,10 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonToModelMapperTest {
 
     private JsonToModelMapper mapper;
+    private MockDataGenerator mockDataGenerator;
 
     @BeforeEach
     void setUp() {
-        mapper = new JsonToModelMapper();
+        mapper = new JsonToModelMapper(mockDataGenerator);
     }
 
     @Test
