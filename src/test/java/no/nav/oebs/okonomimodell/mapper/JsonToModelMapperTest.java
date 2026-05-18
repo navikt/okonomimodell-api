@@ -13,11 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonToModelMapperTest {
 
     private JsonToModelMapper mapper;
-    private MockDataGenerator mockDataGenerator;
 
     @BeforeEach
     void setUp() {
-        mapper = new JsonToModelMapper(mockDataGenerator);
+        mapper = new JsonToModelMapper(new MockDataGenerator());
     }
 
     @Test
@@ -27,6 +26,9 @@ class JsonToModelMapperTest {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Infrastruktur",
+                "startDato": "2025-01-01",
+                "sluttDato": "2026-04-30",
+                "aktiv":    "false",
                 "relasjon": [
                 ]
                 }
