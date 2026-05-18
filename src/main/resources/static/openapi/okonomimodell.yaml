@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Økonomimodell API
-  description: Økonomimodell API
+  description: Select server that corresponds to the environment you want to use.
   version: 1.0.0
 servers:
   - url: 'https://okonomimodell-api-t1.ekstern.dev.nav.no/api/v1'
@@ -9,6 +9,8 @@ servers:
   - url: 'http://localhost:8080/api/v1'
     description: local environment
   - url: 'https://okonomimodell-api-q1.ekstern.dev.nav.no/api/v1'
+    description: preprod environment
+  - url: 'https://okonomimodell-api.ekstern.nav.no/api/v1'
     description: preprod environment
 
 security:
@@ -49,7 +51,7 @@ components:
           $ref: '#/components/schemas/segmentType'
         segmentVerdi:
           type: string
-          description: Verdi for segmentet
+          description: Value of the segment
     segment:
       type: object
       properties:
@@ -57,15 +59,26 @@ components:
           $ref: '#/components/schemas/segmentType'
         segmentVerdi:
           type: string
-          description: Verdi for segmentet
+          description: Value of the segment
         beskrivelse:
           type: string
-          description: Beskrivelse for segment
+          description: Description of the segment
+        startDato:
+          type: string
+          format: date
+          description: Start date of the segment on format YYYY-MM-DD
+        sluttDato:
+          type: string
+          format: date
+          description: End date of the segment on format YYYY-MM-DD
+        aktiv:
+          type: boolean
+          description: Indicates if the segment is active
         relasjon:
           type: array
           items:
             $ref: '#/components/schemas/relasjon'
-          description: Relasjon til andre segmenter
+          description: Relation to other segments
 
 paths:
   /segmenter:
@@ -73,7 +86,7 @@ paths:
       operationId: segments
       security:
         - BearerAuth: []
-      summary: Henter alle segmenter
+      summary: Get all segments
       parameters:
         - name: system
           in: query
@@ -82,7 +95,7 @@ paths:
             $ref: '#/components/schemas/system'
       responses:
         '200':
-          description: Liste alle segmenter
+          description: List of all segments
           content:
             application/json:
               schema:
@@ -93,16 +106,23 @@ paths:
                 - segmentType: ARTSKONTO
                   segmentVerdi: "1234"
                   beskrivelse: "Beskrivelse av segmentet"
+                  startDato: "2024-01-01"
+                  sluttDato: "2027-12-31"
+                  aktiv: true
                   relasjon:
                     - segmentType: KOSTNADSSTED
                       segmentVerdi: "5678"
+        '404':
+          description: No segments found for the given segmentType
+        '400':
+          description: Invalid input parameters
         '500':
           description: Internal Server Error
 
   /segmenter/{segmentType}:
     get:
       operationId: segmentsBySegmentType
-      summary: Henter segmenter for et gitt segmentType
+      summary: Get segments by segmentType and optionally filter by lastUpdateDate
       security:
         - BearerAuth: []
       parameters:
@@ -111,7 +131,7 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/segmentType'
-        - name: oppdatertEtter
+        - name: lastUpdateDate
           in: query
           required: false
           schema:
@@ -124,7 +144,7 @@ paths:
             $ref: '#/components/schemas/system'
       responses:
         '200':
-          description: Liste av segmenter for gitt segmentType
+          description: List of segments for given segmentType, optionally filtered by lastUpdateDate
           content:
             application/json:
               schema:
@@ -135,13 +155,16 @@ paths:
                 - segmentType: ARTSKONTO
                   segmentVerdi: "1234"
                   beskrivelse: "Beskrivelse av segmentet"
+                  startDato: "2024-01-01"
+                  sluttDato: "2027-12-31"
+                  aktiv: true
                   relasjon:
                     - segmentType: KOSTNADSSTED
                       segmentVerdi: "5678"
         '404':
-          description: Fant ikke segmenter for gitt segmentType
+          description: No segments found for the given segmentType
         '400':
-          description: Ugyldig input
+          description: Invalid input parameters
         '500':
           description: Internal Server Error
 

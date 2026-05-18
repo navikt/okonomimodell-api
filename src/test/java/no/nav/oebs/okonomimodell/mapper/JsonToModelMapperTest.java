@@ -16,7 +16,7 @@ class JsonToModelMapperTest {
 
     @BeforeEach
     void setUp() {
-        mapper = new JsonToModelMapper();
+        mapper = new JsonToModelMapper(new MockDataGenerator());
     }
 
     @Test
@@ -26,6 +26,9 @@ class JsonToModelMapperTest {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Infrastruktur",
+                "startDato": "2025-01-01",
+                "sluttDato": "2026-04-30",
+                "aktiv":    "false",
                 "relasjon": [
                 ]
                 }
