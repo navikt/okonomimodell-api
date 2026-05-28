@@ -2,6 +2,8 @@ package no.nav.oebs.okonomimodell.exception;
 
 import no.nav.security.token.support.core.exceptions.JwtTokenMissingException;
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +16,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     private static final String ERROR = "error";
     private static final String MESSAGE = "message";
     private static final String STATUS = "status";
@@ -22,6 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleInvalidJsonException(
             InvalidJsonException ex) {
+        LOGGER.error("500 response due to Invalid JSON retrieved from database: {}", ex.getMessage());
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Invalid JSON retrieved from database");
         respons.put(MESSAGE, ex.getMessage());
@@ -55,6 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception ex) {
+        LOGGER.error("500 response due to An unexpected error: {}", ex.getMessage());
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "An unexpected error occurred");
         respons.put(MESSAGE, ex.getMessage());

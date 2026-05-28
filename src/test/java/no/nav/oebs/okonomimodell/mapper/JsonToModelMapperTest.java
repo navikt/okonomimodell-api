@@ -16,7 +16,7 @@ class JsonToModelMapperTest {
 
     @BeforeEach
     void setUp() {
-        mapper = new JsonToModelMapper(new MockDataGenerator());
+        mapper = new JsonToModelMapper();
     }
 
     @Test
@@ -50,6 +50,9 @@ class JsonToModelMapperTest {
                  "segmentType": "KOSTNADSSTED",
                  "segmentVerdi": "857630",
                  "beskrivelse": "Virksomhetsteknologi",
+                 "startDato": "",
+                 "sluttDato": "",
+                 "aktiv":    "true",
                  "relasjon": [
                  ]
                  }
@@ -70,6 +73,9 @@ class JsonToModelMapperTest {
                   "segmentType": "ARTSKONTO",
                   "segmentVerdi": "281000000000",
                   "beskrivelse": "Pensjonspremie",
+                  "startDato": "01-01-2025",
+                  "sluttDato": "30-40-2026",
+                  "aktiv":    "false",
                   "relasjon": [
                     {
                       "segmentType": "STATSREGNSKAPSKONTO",
@@ -116,6 +122,9 @@ class JsonToModelMapperTest {
                  "segmentType": "ARTSKONTO",
                  "segmentVerdi": "857630",
                  "beskrivelse": "Virksomhetsteknologi",
+                 "startDato": "01-01-2025",
+                 "sluttDato": "",
+                 "aktiv":    "false",
                  "relasjon": [
                  ]
                  }
@@ -125,6 +134,9 @@ class JsonToModelMapperTest {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Infrastruktur",
+                "startDato": "01-01-2025",
+                "sluttDato": "",
+                "aktiv": "false",
                 "relasjon": [
                 ]
                 }
