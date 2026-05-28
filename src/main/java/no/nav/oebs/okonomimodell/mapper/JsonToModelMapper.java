@@ -1,28 +1,34 @@
 package no.nav.oebs.okonomimodell.mapper;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import org.openapitools.model.Relasjon;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 public class JsonToModelMapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonToModelMapper.class);
 
     private static final String RELASJON = "relasjon";
     private static final String SEGMENT_VERDI = "segmentVerdi";
     private static final String BESKRIVELSE = "beskrivelse";
     private static final String SEGMENT_TYPE = "segmentType";
-
-    private final MockDataGenerator mockDataGenerator;
+    private static final String START_DATE = "startDato";
+    private static final String END_DATE = "sluttDato";
+    private static final String AKTIV = "aktiv";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public List<Segment> mapJsonToSegments(List<String> segments) {
         return segments.stream()
@@ -45,12 +51,9 @@ public class JsonToModelMapper {
         segment.segmentVerdi(jsonSegment.get(SEGMENT_VERDI).asString());
         segment.setBeskrivelse(jsonSegment.get(BESKRIVELSE).asString());
         segment.setSegmentType(mapSegmentType(jsonSegment.get(SEGMENT_TYPE).asString()));
-
-        //todo: refactor when all data is available in database view
-        MockDataGenerator.MockSegment mockSegment = mockDataGenerator.getRandomMockSegment();
-        segment.setAktiv(mockSegment.aktiv());
-        segment.setStartDato(mockSegment.fromDate());
-        segment.setSluttDato(mockSegment.toDate());
+        segment.setAktiv(Boolean.valueOf(String.valueOf(jsonSegment.get(AKTIV))));
+        segment.setStartDato(mapJsonToLocalDate(jsonSegment.get(START_DATE)));
+        segment.setSluttDato(mapJsonToLocalDate(jsonSegment.get(END_DATE)));
 
         List<Relasjon> relations = jsonSegment.get(RELASJON)
                 .valueStream()
@@ -74,5 +77,19 @@ public class JsonToModelMapper {
         relation.setSegmentType(mapSegmentType(jsonRelation.get(SEGMENT_TYPE).asString()));
         relation.setSegmentVerdi(jsonRelation.get(SEGMENT_VERDI).asString());
         return relation;
+    }
+
+    private LocalDate mapJsonToLocalDate(JsonNode jsonDate) {
+        String date = jsonDate.asString().trim();
+        if (date.isEmpty() || date.equals("null")) {
+            return null;
+        }
+
+        try {
+            return LocalDate.parse(date, DATE_FORMATTER);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to parse date: {}. Expected format is dd-MM-yyyy. Exception was thrown with message {} ", date, e.getMessage());
+            return null;
+        }
     }
 }
