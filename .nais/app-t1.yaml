@@ -17,6 +17,7 @@ spec:
 
   envFrom:
     - secret: okonomimodell-api-t1
+    - secret: okonomimodell-api-t1-oracle
 
   observability:
     autoInstrumentation:
@@ -60,29 +61,6 @@ spec:
         - application: azure-token-generator
           namespace: nais
           cluster: dev-gcp
-    outbound:
-      external:
-        - ipv4: 10.53.104.43  # dmv43db01.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.44  # dmv43db02.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.45  # dmv43-scan.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.46  # dmv43-scan.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.47  # dmv43-scan.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.48  # dmv43-scan.adeo.no
-          ports:
-            - port: 1521
-        - ipv4: 10.53.104.49  # dmv43-scan.adeo.no
-          ports:
-            - port: 1521
 
   env:
     - name: SPRING_PROFILES_ACTIVE
