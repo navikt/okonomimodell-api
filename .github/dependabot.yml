@@ -8,7 +8,7 @@ updates:
       default-days: 7
     open-pull-requests-limit: 10
     reviewers:
-      - navikt/team-oebs
+      - navikt/oebs-java-dev
   - package-ecosystem: maven
     directory: "/"
     schedule:
@@ -17,7 +17,7 @@ updates:
       default-days: 7
     open-pull-requests-limit: 50
     reviewers:
-      - navikt/team-oebs
+      - navikt/oebs-java-dev
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
@@ -26,4 +26,4 @@ updates:
       default-days: 7
     open-pull-requests-limit: 10
     reviewers:
-      - navikt/team-oebs
+      - navikt/oebs-java-dev
