@@ -51,7 +51,7 @@ public class JsonToModelMapper {
         segment.segmentVerdi(jsonSegment.get(SEGMENT_VERDI).asString());
         segment.setBeskrivelse(jsonSegment.get(BESKRIVELSE).asString());
         segment.setSegmentType(mapSegmentType(jsonSegment.get(SEGMENT_TYPE).asString()));
-        segment.setAktiv(Boolean.valueOf(String.valueOf(jsonSegment.get(AKTIV))));
+        segment.setAktiv(Boolean.valueOf(String.valueOf(jsonSegment.get(AKTIV).asString())));
         segment.setStartDato(mapJsonToLocalDate(jsonSegment.get(START_DATE)));
         segment.setSluttDato(mapJsonToLocalDate(jsonSegment.get(END_DATE)));
 
