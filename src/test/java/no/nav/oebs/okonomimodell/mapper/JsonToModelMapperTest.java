@@ -64,6 +64,7 @@ class JsonToModelMapperTest {
         assertEquals(SegmentType.KOSTNADSSTED, segment.getSegmentType());
         assertEquals("857630", segment.getSegmentVerdi());
         assertEquals("Virksomhetsteknologi", segment.getBeskrivelse());
+        assertEquals(Boolean.valueOf("true"), segment.getAktiv());
     }
 
     @Test
