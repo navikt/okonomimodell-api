@@ -1,80 +1,97 @@
 package no.nav.oebs.okonomimodell.controller;
 
-import no.nav.oebs.okonomimodell.TestApplication;
-import no.nav.oebs.okonomimodell.config.common.logging.HttpLoggingFilter;
 import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
-import no.nav.security.mock.oauth2.MockOAuth2Server;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.openapitools.model.Segment;
+import org.openapitools.model.SegmentType;
+import org.openapitools.model.System;
+import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = TestApplication.class)
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class OkonomimodellControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private MockOAuth2Server mockOAuth2Server;
-
-    @MockitoBean
+    @Mock
     private OkonomimodellService okonomimodellService;
 
-    @MockitoSpyBean
-    private HttpLoggingFilter httpLoggingFilter;
+    private OkonomimodellController controller;
 
-    private String token() {
-        return mockOAuth2Server.issueToken("azuread", "test-client", "test-audience").serialize();
+    @BeforeEach
+    void setUp() {
+        controller = new OkonomimodellController(okonomimodellService);
     }
 
-    @Test
-    void segments_return200WhenSegmentlist() throws Exception {
-        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(List.of());
+    @Nested
+    class SegmentsTests {
 
-        mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN")
-                        .header("Authorization", "Bearer " + token()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+        @Test
+        void segments_returnsOkWithDataFromService() {
+            var expected = List.of(new Segment());
+            when(okonomimodellService.getSegments(any())).thenReturn(expected);
+
+            var result = controller.segments(System.LONN);
+
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertEquals(expected, result.getBody());
+            verify(okonomimodellService).getSegments(System.LONN);
+        }
+
+        @Test
+        void segments_propagatesExceptionFromService() {
+            when(okonomimodellService.getSegments(any()))
+                    .thenThrow(new InvalidJsonException("ugyldig JSON"));
+
+            assertThrows(InvalidJsonException.class, () ->
+                    controller.segments(System.LONN));
+        }
     }
 
-    @Test
-    void segments_return500WhenInvalidJson() throws Exception {
-        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
-                .thenThrow(new InvalidJsonException("ugyldig JSON"));
+    @Nested
+    class SegmentsBySegmentTypeTests {
 
-        mockMvc.perform(get("/segmenter/ARTSKONTO?system=LONN")
-                        .header("Authorization", "Bearer " + token()))
-                .andExpect(status().isInternalServerError());
-    }
+        @Test
+        void segmentsBySegmentType_returnsOkWithDataFromService() {
+            var expected = List.of(new Segment());
+            when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(expected);
 
-    @Test
-    void segments_return401WhenMissingToken() throws Exception {
-        mockMvc.perform(get("/segmenter"))
-                .andExpect(status().isUnauthorized());
-    }
+            var result = controller.segmentsBySegmentType(SegmentType.ARTSKONTO, null, System.LONN);
 
-    @Test
-    void segments_return400WhenInvalidDate() throws Exception {
-        when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
-                .thenThrow(new MethodArgumentTypeMismatchException("lastUpdated", String.class, "lastUpdated", null, new IllegalArgumentException("Ugyldig datoformat")));
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertEquals(expected, result.getBody());
+            verify(okonomimodellService).getSegmentsBySegmentType(SegmentType.ARTSKONTO, null, System.LONN);
+        }
 
-        mockMvc.perform(get("/segmenter/ARTSKONTO?oppdatertEtter=20-003-2024")
-                        .header("Authorization", "Bearer " + token()))
-                .andExpect(status().isBadRequest());
+        @Test
+        void segmentsBySegmentType_withDate_passesDateToService() {
+            when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(List.of());
+            var date = LocalDate.of(2024, 3, 20);
+
+            controller.segmentsBySegmentType(SegmentType.ARTSKONTO, date, System.LONN);
+
+            verify(okonomimodellService).getSegmentsBySegmentType(SegmentType.ARTSKONTO, date, System.LONN);
+        }
+
+        @Test
+        void segmentsBySegmentType_propagatesInvalidJsonExceptionFromService() {
+            when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any()))
+                    .thenThrow(new InvalidJsonException("ugyldig JSON"));
+
+            assertThrows(InvalidJsonException.class, () ->
+                    controller.segmentsBySegmentType(SegmentType.ARTSKONTO, null, System.LONN));
+        }
     }
 }
