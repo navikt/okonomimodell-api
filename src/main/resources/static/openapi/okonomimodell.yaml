@@ -168,3 +168,94 @@ paths:
         '500':
           description: Internal Server Error
 
+  /validatekontostreng:
+    get:
+      operationId: validateKontostreng
+      summary: Validate a kontostreng
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: artskonto
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000000000"
+        - name: kostnadssted
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: produkt
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: oppgave
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: felles
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: statskonto
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000000000"
+        - name: kilde
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: tilsagnsar
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: frittfelt1
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: frittfelt2
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "000000"
+        - name: fullmaktskode
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "00"
+        - name: regnskapsforer
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "00"
+      responses:
+        '200':
+          description: Kontostreng has been validated successfully
+          content:
+            application/json:
+              schema:
+                type: boolean
+              example: true
+        '400':
+          description: Invalid input parameters
+        '500':
+          description: Internal Server Error

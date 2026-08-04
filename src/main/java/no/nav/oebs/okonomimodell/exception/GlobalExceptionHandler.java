@@ -61,6 +61,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception ex) {
         LOGGER.error("500 response due to An unexpected error: {}", ex.getMessage());
+        LOGGER.error("Stack trace: ", ex);
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "An unexpected error occurred");
         respons.put(MESSAGE, ex.getMessage());
