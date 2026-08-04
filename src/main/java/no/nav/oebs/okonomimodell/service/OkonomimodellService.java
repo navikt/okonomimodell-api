@@ -1,7 +1,9 @@
 package no.nav.oebs.okonomimodell.service;
 
 import lombok.AllArgsConstructor;
+import no.nav.oebs.okonomimodell.model.Kontostreng;
 import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
+import no.nav.oebs.okonomimodell.db.procedure.ValidateKontostrengProcedure;
 import no.nav.oebs.okonomimodell.db.repository.SegmentJpaRepository;
 import no.nav.oebs.okonomimodell.mapper.JsonToModelMapper;
 import org.openapitools.model.Segment;
@@ -16,9 +18,10 @@ import java.util.List;
 @AllArgsConstructor
 public class OkonomimodellService {
 
-    private final SegmentJpaRepository segmentJpaRepository;
     private final JsonToModelMapper jsonToModelMapper;
     private final OebsResponseHolder oebsResponseHolder;
+    private final SegmentJpaRepository segmentJpaRepository;
+    private final ValidateKontostrengProcedure kontostrengValidationRepository;
 
     public List<Segment> getSegments(System system) {
         var raw = segmentJpaRepository.findAllAsJson();
@@ -32,6 +35,22 @@ public class OkonomimodellService {
                 : segmentJpaRepository.findBySegmentType(segmentType.toString());
         oebsResponseHolder.set(segments);
         return jsonToModelMapper.mapJsonToSegments(segments);
+    }
+
+    public boolean getKontostrengValidation(String artskonto,
+                                            String kostnadssted,
+                                            String produkt,
+                                            String oppgave,
+                                            String felles,
+                                            String statskonto,
+                                            String kilde,
+                                            String tilsagnsaar,
+                                            String frittfelt1,
+                                            String frittfelt2,
+                                            String fullmaktskode,
+                                            String regnskapsforer) {
+        Kontostreng kontostreng = Kontostreng.of(artskonto, kostnadssted, produkt, oppgave, felles, statskonto, kilde, tilsagnsaar, frittfelt1, frittfelt2, fullmaktskode, regnskapsforer);
+        return kontostrengValidationRepository.executeValidateKontostrengProcedure(kontostreng);
     }
 
 }

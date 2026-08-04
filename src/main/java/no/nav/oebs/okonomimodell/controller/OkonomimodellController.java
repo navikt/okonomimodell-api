@@ -3,7 +3,6 @@ package no.nav.oebs.okonomimodell.controller;
 import lombok.AllArgsConstructor;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.security.token.support.core.api.Unprotected;
 import org.openapitools.api.SegmenterApi;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
