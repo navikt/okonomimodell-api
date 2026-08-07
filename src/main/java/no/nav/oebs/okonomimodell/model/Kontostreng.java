@@ -24,14 +24,14 @@ public record Kontostreng(
             SIX_ZEROS,
             SIX_ZEROS,
             SIX_ZEROS,
-            SIX_ZEROS,
             TWELVE_ZEROS,
-            SIX_ZEROS,
-            SIX_ZEROS,
+            TWO_ZEROS,
             SIX_ZEROS,
             SIX_ZEROS,
             TWO_ZEROS,
-            TWO_ZEROS);
+            SIX_ZEROS,
+            SIX_ZEROS,
+            SIX_ZEROS);
 
     public static Kontostreng of(String artskonto,
                                  String kostnadssted,
