@@ -62,5 +62,3 @@ spec:
           namespace: nais
           cluster: dev-gcp
 
-  env:
-      value: dev
