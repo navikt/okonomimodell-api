@@ -91,4 +91,20 @@ class HttpLoggingFilterTest {
         assertDoesNotThrow(() ->
                 httpLoggingFilter.doFilterInternal(request, response, filterChain));
     }
+
+    @Test
+    void shouldNotFilter_shouldSkipActuatorPaths() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/health");
+        request.setServletPath("/actuator/health");
+
+        assertTrue(httpLoggingFilter.shouldNotFilter(request));
+    }
+
+    @Test
+    void shouldNotFilter_shouldNotSkipNonActuatorPaths() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/segmenter");
+        request.setServletPath("/segmenter");
+
+        assertFalse(httpLoggingFilter.shouldNotFilter(request));
+    }
 }

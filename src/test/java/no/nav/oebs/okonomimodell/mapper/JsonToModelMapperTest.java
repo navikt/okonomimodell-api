@@ -156,4 +156,63 @@ class JsonToModelMapperTest {
 
         assertTrue(segmenter.isEmpty());
     }
+
+    @Test
+    void mapJsonStringToSegment_shouldParseDatesInDdMmYyyyFormat() {
+        String json = """
+                {
+                "segmentType": "KOSTNADSSTED",
+                "segmentVerdi": "857410",
+                "beskrivelse": "Test",
+                "startDato": "01-06-2025",
+                "sluttDato": "31-12-2025",
+                "aktiv": "true",
+                "relasjon": []
+                }
+                """;
+
+        Segment segment = mapper.mapJsonStringToSegment(json);
+
+        assertEquals(java.time.LocalDate.of(2025, 6, 1), segment.getStartDato());
+        assertEquals(java.time.LocalDate.of(2025, 12, 31), segment.getSluttDato());
+    }
+
+    @Test
+    void mapJsonStringToSegment_shouldReturnNullDatesForEmptyStrings() {
+        String json = """
+                {
+                "segmentType": "KOSTNADSSTED",
+                "segmentVerdi": "857410",
+                "beskrivelse": "Test",
+                "startDato": "",
+                "sluttDato": "",
+                "aktiv": "false",
+                "relasjon": []
+                }
+                """;
+
+        Segment segment = mapper.mapJsonStringToSegment(json);
+
+        assertNull(segment.getStartDato());
+        assertNull(segment.getSluttDato());
+    }
+
+    @Test
+    void mapJsonStringToSegment_shouldReturnNullDateForUnrecognizedFormat() {
+        String json = """
+                {
+                "segmentType": "KOSTNADSSTED",
+                "segmentVerdi": "857410",
+                "beskrivelse": "Test",
+                "startDato": "2025-06-01",
+                "sluttDato": "",
+                "aktiv": "false",
+                "relasjon": []
+                }
+                """;
+
+        Segment segment = mapper.mapJsonStringToSegment(json);
+
+        assertNull(segment.getStartDato());
+    }
 }
