@@ -1,8 +1,10 @@
 package no.nav.oebs.okonomimodell.service;
 
 import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
+import no.nav.oebs.okonomimodell.db.procedure.ValidateKontostrengProcedure;
 import no.nav.oebs.okonomimodell.db.repository.SegmentJpaRepository;
 import no.nav.oebs.okonomimodell.mapper.JsonToModelMapper;
+import no.nav.oebs.okonomimodell.model.Kontostreng;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,8 +17,7 @@ import org.openapitools.model.System;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +39,9 @@ class OkonomimodellServiceTest {
 
     @Mock
     private SegmentJpaRepository segmentJpaRepository;
+
+    @Mock
+    private ValidateKontostrengProcedure kontostrengValidationRepository;
 
     @Mock
     private JsonToModelMapper jsonToModelMapper;
@@ -110,5 +114,35 @@ class OkonomimodellServiceTest {
         assertNotNull(result);
         assertEquals(0, result.size());
         oebsResponseHolder.clear();
+    }
+
+    @Test
+    void getKontostrengValidation_shouldReturnTrueWhenProcedureReturnsTrue() {
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(true);
+
+        boolean result = okonomimodellService.getKontostrengValidation("281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void getKontostrengValidation_shouldReturnFalseWhenProcedureReturnsFalse() {
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(false);
+
+        boolean result = okonomimodellService.getKontostrengValidation(null, null, null, null, null, null, null, null, null, null, null, null);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void getKontostrengValidation_shouldPassKontostrengWithDefaultsForNullParams() {
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(true);
+
+        okonomimodellService.getKontostrengValidation(null, null, null, null, null, null, null, null, null, null, null, null);
+
+        var captor = org.mockito.ArgumentCaptor.forClass(Kontostreng.class);
+        verify(kontostrengValidationRepository).executeValidateKontostrengProcedure(captor.capture());
+        assertEquals("000000000000", captor.getValue().artskonto());
+        assertEquals("000000", captor.getValue().kostnadssted());
     }
 }
