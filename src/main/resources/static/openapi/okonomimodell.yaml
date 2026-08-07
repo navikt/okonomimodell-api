@@ -204,13 +204,13 @@ paths:
           required: false
           schema:
             type: string
-            example: "000000"
+            example: "000000000000"
         - name: statskonto
           in: query
           required: false
           schema:
             type: string
-            example: "000000000000"
+            example: "00"
         - name: kilde
           in: query
           required: false
@@ -228,7 +228,7 @@ paths:
           required: false
           schema:
             type: string
-            example: "000000"
+            example: "00"
         - name: frittfelt2
           in: query
           required: false
@@ -240,13 +240,13 @@ paths:
           required: false
           schema:
             type: string
-            example: "00"
+            example: "000000"
         - name: regnskapsforer
           in: query
           required: false
           schema:
             type: string
-            example: "00"
+            example: "000000"
       responses:
         '200':
           description: Kontostreng has been validated successfully
