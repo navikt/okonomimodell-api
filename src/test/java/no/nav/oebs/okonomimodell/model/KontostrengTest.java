@@ -32,14 +32,14 @@ class KontostrengTest {
         assertEquals("000000", k.kostnadssted());
         assertEquals("000000", k.produkt());
         assertEquals("000000", k.oppgave());
-        assertEquals("000000000000", k.felles());
-        assertEquals("00", k.statskonto());
+        assertEquals("000000", k.felles());
+        assertEquals("000000000000", k.statskonto());
         assertEquals("000000", k.kilde());
         assertEquals("000000", k.tilsagnsaar());
-        assertEquals("00", k.frittfelt1());
+        assertEquals("000000", k.frittfelt1());
         assertEquals("000000", k.frittfelt2());
-        assertEquals("000000", k.fullmaktskode());
-        assertEquals("000000", k.regnskapsforer());
+        assertEquals("00", k.fullmaktskode());
+        assertEquals("00", k.regnskapsforer());
     }
 
     @Test
