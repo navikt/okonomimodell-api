@@ -21,7 +21,6 @@ public class ValidateKontostrengProcedure {
     private static final String PACKAGE = "XXRTV_OKONOMIMODELL_API_PKG";
     private static final String PROCEDURE = "xxrtv_validerkontostreng_api";
 
-    private static final String IN_PARAM_ORGID = "p_org_id";
     private static final String IN_PARAM_ARTSKONTO = "p_artskonto";
     private static final String IN_PARAM_KOSTNADSSTED= "p_ksted";
     private static final String IN_PARAM_PRODUKT = "p_produktoppgave";
@@ -49,7 +48,6 @@ public class ValidateKontostrengProcedure {
                 .withProcedureName(PROCEDURE)
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
-                        new SqlParameter(IN_PARAM_ORGID, Types.NUMERIC),
                         new SqlParameter(IN_PARAM_ARTSKONTO, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_KOSTNADSSTED, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_PRODUKT, Types.VARCHAR),
@@ -78,7 +76,6 @@ public class ValidateKontostrengProcedure {
 
     public Map<String, Object> getValidateKontostreng(Kontostreng kontostreng) {
         MapSqlParameterSource inputParams = new MapSqlParameterSource()
-                .addValue(IN_PARAM_ORGID, 0) //todo: what should ord id be?
                 .addValue(IN_PARAM_ARTSKONTO, kontostreng.artskonto())
                 .addValue(IN_PARAM_KOSTNADSSTED, kontostreng.kostnadssted())
                 .addValue(IN_PARAM_PRODUKT, kontostreng.produkt())
