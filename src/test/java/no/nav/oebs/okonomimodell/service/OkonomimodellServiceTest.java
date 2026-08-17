@@ -1,10 +1,10 @@
 package no.nav.oebs.okonomimodell.service;
 
 import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
-import no.nav.oebs.okonomimodell.db.procedure.ValidateKontostrengProcedure;
-import no.nav.oebs.okonomimodell.db.repository.SegmentJpaRepository;
+import no.nav.oebs.okonomimodell.repository.ValidateKontostrengProcedure;
+import no.nav.oebs.okonomimodell.repository.SegmentJpaRepository;
 import no.nav.oebs.okonomimodell.mapper.JsonToModelMapper;
-import no.nav.oebs.okonomimodell.model.Kontostreng;
+import no.nav.oebs.okonomimodell.dto.Kontostreng;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

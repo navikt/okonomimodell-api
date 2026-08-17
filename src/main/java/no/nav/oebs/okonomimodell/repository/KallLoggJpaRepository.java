@@ -1,6 +1,6 @@
-package no.nav.oebs.okonomimodell.db.repository;
+package no.nav.oebs.okonomimodell.repository;
 
-import no.nav.oebs.okonomimodell.db.entity.KallLogg;
+import no.nav.oebs.okonomimodell.repository.entity.KallLogg;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

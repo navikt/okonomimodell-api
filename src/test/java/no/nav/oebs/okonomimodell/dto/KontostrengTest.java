@@ -1,4 +1,4 @@
-package no.nav.oebs.okonomimodell.model;
+package no.nav.oebs.okonomimodell.dto;
 
 import org.junit.jupiter.api.Test;
 
