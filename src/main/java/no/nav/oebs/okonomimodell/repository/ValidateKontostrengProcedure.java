@@ -1,7 +1,7 @@
-package no.nav.oebs.okonomimodell.db.procedure;
+package no.nav.oebs.okonomimodell.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.oebs.okonomimodell.model.Kontostreng;
+import no.nav.oebs.okonomimodell.dto.Kontostreng;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;

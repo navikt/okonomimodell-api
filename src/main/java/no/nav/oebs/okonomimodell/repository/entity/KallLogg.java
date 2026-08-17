@@ -1,4 +1,4 @@
-package no.nav.oebs.okonomimodell.db.entity;
+package no.nav.oebs.okonomimodell.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

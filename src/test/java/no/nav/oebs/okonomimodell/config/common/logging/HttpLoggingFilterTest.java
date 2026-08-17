@@ -2,8 +2,8 @@ package no.nav.oebs.okonomimodell.config.common.logging;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import no.nav.oebs.okonomimodell.db.entity.KallLogg;
-import no.nav.oebs.okonomimodell.db.repository.KallLoggJpaRepository;
+import no.nav.oebs.okonomimodell.repository.entity.KallLogg;
+import no.nav.oebs.okonomimodell.repository.KallLoggJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,6 @@
-package no.nav.oebs.okonomimodell.db.repository;
+package no.nav.oebs.okonomimodell.repository;
 
-import no.nav.oebs.okonomimodell.db.entity.Konteringsinfo;
+import no.nav.oebs.okonomimodell.repository.entity.Konteringsinfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

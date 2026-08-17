@@ -1,6 +1,7 @@
-package no.nav.oebs.okonomimodell.db.procedure;
+package no.nav.oebs.okonomimodell.repository.procedure;
 
-import no.nav.oebs.okonomimodell.model.Kontostreng;
+import no.nav.oebs.okonomimodell.dto.Kontostreng;
+import no.nav.oebs.okonomimodell.repository.ValidateKontostrengProcedure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
