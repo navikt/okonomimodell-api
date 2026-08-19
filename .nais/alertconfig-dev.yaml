@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: okonomimodell-api
+  namespace: team-oebs
+  labels:
+    alertmanagerConfig: okonomimodell-api
+spec:
+  route:
+    receiver: slack-notifications
+    matchers:
+      - name: alert_routing_slack
+        value: team-oebs-alerts-dev
+  receivers:
+    - name: slack-notifications
+      slackConfigs:
+        - apiURL:
+            name: slack-webhook-secret
+            key: webhookUrl
+          channel: "#team-oebs-alerts-dev"
+          iconEmoji: ":test:"
+          sendResolved: true
+          title:  "🚨 {{ .GroupLabels.alertname }}"
+          text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
