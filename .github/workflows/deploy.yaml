@@ -45,11 +45,16 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build and analyze
+      - name: Build and test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: |
+          if [ "${{ github.actor }}" != "dependabot[bot]" ]; then
+            mvn -B verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          else
+            mvn -B verify -Pcoverage
+          fi
 
 
       - name: Push Docker image to GAR
