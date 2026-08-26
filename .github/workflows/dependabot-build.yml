@@ -11,9 +11,13 @@ permissions:
 
 jobs:
   test:
+
     name: test
     runs-on: ubuntu-latest
     steps:
+      - run: mvn -B verify --settings .github/maven-settings.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-java@v5.7.0
         with:
