@@ -17,6 +17,8 @@ jobs:
         uses: navikt/automerge-dependabot@0e342d25820ca0d2941dcdcad4b7bbb59ad59122
         with:
           token: ${{ github.token }}
+          blackout-periods: "Sat,Sun,May 1,May 17,Dec 24-Jan 3"
+          update-branch-before-merge: true
           semver-filter: 'patch,minor,unknown'
           auto-approve: true
           merge-method: 'squash'
