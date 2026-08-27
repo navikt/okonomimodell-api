@@ -19,6 +19,8 @@ on:
         required: true
         type: boolean
         default: false
+  repository_dispatch:
+    types: [dependabot-deploy]
 
 jobs:
   build:
@@ -45,11 +47,16 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build and analyze
+      - name: Build and test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: |
+          if [ "${{ github.actor }}" != "dependabot[bot]" ]; then
+            mvn -B verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          else
+            mvn -B verify -Pcoverage
+          fi
 
 
       - name: Push Docker image to GAR
@@ -70,7 +77,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867
+      - uses: nais/deploy/actions/deploy@849e900e3cfa7faf7ad1532bb3a3e6499c932199
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/app-t1.yaml
@@ -87,7 +94,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867
+      - uses: nais/deploy/actions/deploy@849e900e3cfa7faf7ad1532bb3a3e6499c932199
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/app-q1.yaml
@@ -105,7 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867
+      - uses: nais/deploy/actions/deploy@849e900e3cfa7faf7ad1532bb3a3e6499c932199
         env:
           CLUSTER: prod-gcp
           RESOURCE: .nais/app-prod.yaml
