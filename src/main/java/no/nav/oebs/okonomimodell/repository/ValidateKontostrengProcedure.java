@@ -17,10 +17,11 @@ import java.util.Map;
 @Repository
 public class ValidateKontostrengProcedure {
 
-    private static final String SCHEMA = "APPS";
-    private static final String PACKAGE = "XXRTV_OKONOMIMODELL_API_PKG";
-    private static final String PROCEDURE = "xxrtv_validerkontostreng_api";
+    private static final String SCHEMA = "xxrtv";
+    private static final String PACKAGE = "xxrtv_gl_val_kontostreng_pkg"; //"XXRTV_OKONOMIMODELL_API_PKG";
+    private static final String PROCEDURE = "validerkstreng"; //"xxrtv_validerkontostreng_api";
 
+    private static final String IN_PARAM_ORGID = "p_org_id";
     private static final String IN_PARAM_ARTSKONTO = "p_artskonto";
     private static final String IN_PARAM_KOSTNADSSTED= "p_ksted";
     private static final String IN_PARAM_PRODUKT = "p_produktoppgave";
@@ -35,8 +36,9 @@ public class ValidateKontostrengProcedure {
     private static final String IN_PARAM_REGNSKAPSFORER = "p_regnskapsforer";
     private static final String IN_PARAM_SYSTEM = "p_system";
 
-    private static final String OUT_PARAM_VALID = "p_valid";
-    private static final String OUT_PARAM_MESSAG = "p_message";
+    private static final String OUT_PARAM_MESSAGE = "p_json_message";
+    //private static final String OUT_PARAM_VALID = "p_valid";
+    //private static final String OUT_PARAM_MESSAG = "p_message";
 
     private final SimpleJdbcCall validateKontostrengCall;
 
@@ -48,6 +50,7 @@ public class ValidateKontostrengProcedure {
                 .withProcedureName(PROCEDURE)
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
+                        new SqlParameter(IN_PARAM_ORGID, Types.NUMERIC),
                         new SqlParameter(IN_PARAM_ARTSKONTO, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_KOSTNADSSTED, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_PRODUKT, Types.VARCHAR),
@@ -61,21 +64,25 @@ public class ValidateKontostrengProcedure {
                         new SqlParameter(IN_PARAM_FULLMAKTSKODE, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_REGNSKAPSFORER, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_SYSTEM, Types.VARCHAR),
-                        new SqlOutParameter(OUT_PARAM_VALID, Types.VARCHAR),
-                        new SqlOutParameter(OUT_PARAM_MESSAG, Types.VARCHAR)
+                        new SqlParameter(OUT_PARAM_MESSAGE, Types.VARCHAR)
+                        //new SqlOutParameter(OUT_PARAM_VALID, Types.VARCHAR),
+                        //new SqlOutParameter(OUT_PARAM_MESSAG, Types.VARCHAR)
                 );
     }
 
     public boolean executeValidateKontostrengProcedure(Kontostreng kontostreng) {
         Map<String, Object> result = getValidateKontostreng(kontostreng);
-        String valid = (String) result.get(OUT_PARAM_VALID);
-        String message = (String) result.get(OUT_PARAM_MESSAG);
-        log.info("Executing procedure with result valid={}, message={}", valid, message);
-        return "Y".equals(valid);
+        //String valid = (String) result.get(OUT_PARAM_VALID);
+        //String message = (String) result.get(OUT_PARAM_MESSAG);
+        //log.info("Executing procedure with result valid={}, message={}", valid, message);
+        String outMessage = (String) result.get(OUT_PARAM_MESSAGE);
+        log.info("message \n {}", outMessage);
+        return false; //"Y".equals(valid);
     }
 
     public Map<String, Object> getValidateKontostreng(Kontostreng kontostreng) {
         MapSqlParameterSource inputParams = new MapSqlParameterSource()
+                .addValue(IN_PARAM_ORGID, 202)
                 .addValue(IN_PARAM_ARTSKONTO, kontostreng.artskonto())
                 .addValue(IN_PARAM_KOSTNADSSTED, kontostreng.kostnadssted())
                 .addValue(IN_PARAM_PRODUKT, kontostreng.produkt())
