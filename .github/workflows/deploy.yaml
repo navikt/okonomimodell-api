@@ -19,8 +19,6 @@ on:
         required: true
         type: boolean
         default: false
-  repository_dispatch:
-    types: [dependabot-deploy]
 
 jobs:
   build:
