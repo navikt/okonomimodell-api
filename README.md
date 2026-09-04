@@ -35,6 +35,8 @@ og har satt følgende environment variabler:
 - `OEBS_PASSWORD` - passord for oebs
 - `OEBS_URL` - url for oebs
 
+//todo: Legge til info om de andre environement variablene som må være satt for at man skal kunne kjøre lokalt
+
 Samtidig må det være mulig å koble seg opp til oebs, som ligger i sikker sone, fra der koden kjøres. 
 Her kan utvikler enten bruke **vdi-utvikler-oebs** som er opprettet for å gjøre utvikling direkte i sikker sone, eller bruke **Global Secure Access Client**.
 Det kan være lurt å enable **Global Secure Access Client** før man kobler til naisdevice, fordi begge deler er VPN-løsninger som kan gå i bena på hverandre.
