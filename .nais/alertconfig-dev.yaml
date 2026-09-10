@@ -18,7 +18,6 @@ spec:
             name: slack-webhook-secret
             key: webhookUrl
           channel: "#team-oebs-alerts-dev"
-          iconEmoji: ":test:"
           sendResolved: true
-          title:  "🚨 {{ .GroupLabels.alertname }}"
+          title:  "🚨 {{ .CommonLabels.alertname }}"
           text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'

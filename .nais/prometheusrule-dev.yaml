@@ -81,10 +81,10 @@ spec:
             alert_routing_slack: team-oebs-alerts-dev
             alert_type: custom
 
-        - alert: OkonomimodellApiT1High401Rate
+        - alert: OkonomimodellApiT1High4xxRate
           expr: |
             (
-              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng", status="401"}[5m]))
+              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng", status=~"4.."}[5m]))
               /
               clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])), 0.1)
             ) > 0.25
@@ -92,28 +92,9 @@ spec:
             sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])) > 0.2
           for: 10m
           annotations:
-            summary: "okonomimodell-api-t1 har mange 401-feil"
-            consequence: "Auth-regresjoner kan blokkere verifisering"
+            summary: "okonomimodell-api-t1 har mange 4xx-feil"
+            consequence: "Auth-regresjoner eller tilgangsregler kan blokkere verifisering"
             action: "Sjekk tokenvalidering, klientoppsett og nylige auth-endringer"
-          labels:
-            severity: warning
-            alert_routing_slack: team-oebs-alerts-dev
-            alert_type: custom
-
-        - alert: OkonomimodellApiT1High403Rate
-          expr: |
-            (
-              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng", status="403"}[5m]))
-              /
-              clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])), 0.1)
-            ) > 0.15
-            and
-            sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])) > 0.2
-          for: 10m
-          annotations:
-            summary: "okonomimodell-api-t1 har mange 403-feil"
-            consequence: "Tilgangsregler kan blokkere legitim trafikk"
-            action: "Sjekk sikkerhetsregler, roller og klientidentitet"
           labels:
             severity: warning
             alert_routing_slack: team-oebs-alerts-dev

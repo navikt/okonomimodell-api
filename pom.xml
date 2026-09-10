@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.0</version>
+		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>no.nav.oebs</groupId>
@@ -94,12 +94,12 @@
 		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-spring</artifactId>
-			<version>5.0.30</version>
+			<version>6.0.12</version>
 		</dependency>
 		<dependency>
 			<groupId>no.nav.security</groupId>
 			<artifactId>token-validation-spring-test</artifactId>
-			<version>5.0.30</version>
+			<version>6.0.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -162,7 +162,7 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.24.0</version>
+				<version>7.25.0</version>
 				<executions>
 					<execution>
 						<goals>
