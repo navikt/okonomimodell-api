@@ -1,25 +1,33 @@
 package no.nav.oebs.okonomimodell.repository;
 
+import no.nav.oebs.okonomimodell.exception.InvalidOebsResponseException;
+import org.openapitools.model.KontostrengValidation;
+import tools.jackson.core.JacksonException;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.oebs.okonomimodell.dto.Kontostreng;
+import no.nav.oebs.okonomimodell.dto.ValidateRespons;
+import org.openapitools.model.System;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.sql.DataSource;
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Repository
 public class ValidateKontostrengProcedure {
 
-    private static final String SCHEMA = "xxrtv";
-    private static final String PACKAGE = "xxrtv_gl_val_kontostreng_pkg"; //"XXRTV_OKONOMIMODELL_API_PKG";
-    private static final String PROCEDURE = "validerkstreng"; //"xxrtv_validerkontostreng_api";
+    private static final String SCHEMA = "apps";
+    private static final String PACKAGE = "xxrtv_gl_val_kontostreng_pkg";
+    private static final String PROCEDURE = "validerkstreng";
 
     private static final String IN_PARAM_ORGID = "p_org_id";
     private static final String IN_PARAM_ARTSKONTO = "p_artskonto";
@@ -37,13 +45,12 @@ public class ValidateKontostrengProcedure {
     private static final String IN_PARAM_SYSTEM = "p_system";
 
     private static final String OUT_PARAM_MESSAGE = "p_json_message";
-    //private static final String OUT_PARAM_VALID = "p_valid";
-    //private static final String OUT_PARAM_MESSAG = "p_message";
 
     private final SimpleJdbcCall validateKontostrengCall;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ValidateKontostrengProcedure(DataSource dataSource) {
+    public ValidateKontostrengProcedure(DataSource dataSource, ObjectMapper objectMapper) {
         this.validateKontostrengCall = new SimpleJdbcCall(dataSource)
                 .withSchemaName(SCHEMA)
                 .withCatalogName(PACKAGE)
@@ -64,23 +71,38 @@ public class ValidateKontostrengProcedure {
                         new SqlParameter(IN_PARAM_FULLMAKTSKODE, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_REGNSKAPSFORER, Types.VARCHAR),
                         new SqlParameter(IN_PARAM_SYSTEM, Types.VARCHAR),
-                        new SqlParameter(OUT_PARAM_MESSAGE, Types.VARCHAR)
-                        //new SqlOutParameter(OUT_PARAM_VALID, Types.VARCHAR),
-                        //new SqlOutParameter(OUT_PARAM_MESSAG, Types.VARCHAR)
+                        new SqlOutParameter(OUT_PARAM_MESSAGE, Types.VARCHAR)
                 );
+        this.objectMapper = objectMapper;
     }
 
-    public boolean executeValidateKontostrengProcedure(Kontostreng kontostreng) {
-        Map<String, Object> result = getValidateKontostreng(kontostreng);
-        //String valid = (String) result.get(OUT_PARAM_VALID);
-        //String message = (String) result.get(OUT_PARAM_MESSAG);
-        //log.info("Executing procedure with result valid={}, message={}", valid, message);
+    public KontostrengValidation executeValidateKontostrengProcedure(System system, Kontostreng kontostreng) {
+        Map<String, Object> result = getValidateKontostreng(system, kontostreng);
         String outMessage = (String) result.get(OUT_PARAM_MESSAGE);
-        log.info("message \n {}", outMessage);
-        return false; //"Y".equals(valid);
+
+        try {
+            ValidateRespons validateRespons = parseValidateRespons(outMessage);
+
+            // If ccid has a value then the kontostreng is valid, otherwise it is invalid
+            String ccid = validateRespons.ccid();
+            if (ccid == null) {
+                throw new InvalidOebsResponseException("CCID is null in the response from the procedure.");
+            }
+            boolean valid = !ccid.isEmpty();
+            KontostrengValidation validation = new KontostrengValidation().valid(valid);
+            if (!valid) {
+                validation.setFeilmeldingOebs(validateRespons.validateMessage());
+            }
+            return validation;
+        } catch (InvalidOebsResponseException e) {
+            log.error("Validation failed for kontostreng {} from system {} with outMessage {}: {}",
+                    kontostreng, system, outMessage, e.getMessage());
+            throw e;
+        }
+
     }
 
-    public Map<String, Object> getValidateKontostreng(Kontostreng kontostreng) {
+    public Map<String, Object> getValidateKontostreng(System system, Kontostreng kontostreng) {
         MapSqlParameterSource inputParams = new MapSqlParameterSource()
                 .addValue(IN_PARAM_ORGID, 202)
                 .addValue(IN_PARAM_ARTSKONTO, kontostreng.artskonto())
@@ -95,8 +117,29 @@ public class ValidateKontostrengProcedure {
                 .addValue(IN_PARAM_FRTTFELT2, kontostreng.frittfelt2())
                 .addValue(IN_PARAM_FULLMAKTSKODE, kontostreng.fullmaktskode())
                 .addValue(IN_PARAM_REGNSKAPSFORER, kontostreng.regnskapsforer())
-                .addValue(IN_PARAM_SYSTEM, "LONN"); //todo: should system be included?
+                .addValue(IN_PARAM_SYSTEM, system);
 
         return validateKontostrengCall.execute(inputParams);
+    }
+
+    private ValidateRespons parseValidateRespons(String outMessage) {
+        if (outMessage == null || outMessage.isEmpty()) {
+            throw new InvalidOebsResponseException("OeBS did return an empty response to validation procedure processing kontostreng.");
+        }
+        try {
+            String trimmed = outMessage.trim(); //hva gjør trim?
+            if (trimmed.startsWith("[")){
+                List<ValidateRespons> responsList = objectMapper.readValue(
+                        trimmed, new TypeReference<List<ValidateRespons>>() {});
+                if (responsList.isEmpty()) {
+                    throw new InvalidOebsResponseException("OeBS response list: " + outMessage + " is empty for kontostreng validation.");
+                }
+                return responsList.getFirst();
+            }
+            return objectMapper.readValue(trimmed, ValidateRespons.class);
+        } catch (JacksonException e) {
+            throw new InvalidOebsResponseException(
+                    "Parsing of OeBS response to validationResponse failed. Response: " + outMessage, e);
+        }
     }
 }
