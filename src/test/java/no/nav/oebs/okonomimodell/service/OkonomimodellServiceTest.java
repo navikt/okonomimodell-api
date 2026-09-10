@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
 import org.openapitools.model.System;
+import org.openapitools.model.KontostrengValidation;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -118,30 +119,33 @@ class OkonomimodellServiceTest {
 
     @Test
     void getKontostrengValidation_shouldReturnTrueWhenProcedureReturnsTrue() {
-        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(true);
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(eq(System.LONN), any(Kontostreng.class)))
+                .thenReturn(new KontostrengValidation().valid(true));
 
-        boolean result = okonomimodellService.getKontostrengValidation("281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
+        KontostrengValidation result = okonomimodellService.getKontostrengValidation(System.LONN, "281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
 
-        assertTrue(result);
+        assertEquals(Boolean.TRUE, result.getValid());
     }
 
     @Test
     void getKontostrengValidation_shouldReturnFalseWhenProcedureReturnsFalse() {
-        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(false);
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(eq(System.LONN), any(Kontostreng.class)))
+                .thenReturn(new KontostrengValidation().valid(false));
 
-        boolean result = okonomimodellService.getKontostrengValidation(null, null, null, null, null, null, null, null, null, null, null, null);
+        KontostrengValidation result = okonomimodellService.getKontostrengValidation(System.LONN, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        assertFalse(result);
+        assertEquals(Boolean.FALSE, result.getValid());
     }
 
     @Test
     void getKontostrengValidation_shouldPassKontostrengWithDefaultsForNullParams() {
-        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(any(Kontostreng.class))).thenReturn(true);
+        when(kontostrengValidationRepository.executeValidateKontostrengProcedure(eq(System.LONN), any(Kontostreng.class)))
+                .thenReturn(new KontostrengValidation().valid(true));
 
-        okonomimodellService.getKontostrengValidation(null, null, null, null, null, null, null, null, null, null, null, null);
+        okonomimodellService.getKontostrengValidation(System.LONN, null, null, null, null, null, null, null, null, null, null, null, null);
 
         var captor = org.mockito.ArgumentCaptor.forClass(Kontostreng.class);
-        verify(kontostrengValidationRepository).executeValidateKontostrengProcedure(captor.capture());
+        verify(kontostrengValidationRepository).executeValidateKontostrengProcedure(eq(System.LONN), captor.capture());
         assertEquals("000000000000", captor.getValue().artskonto());
         assertEquals("000000", captor.getValue().kostnadssted());
     }

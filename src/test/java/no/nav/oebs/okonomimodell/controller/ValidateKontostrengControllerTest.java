@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openapitools.model.KontostrengValidation;
+import org.openapitools.model.System;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,44 +29,47 @@ class ValidateKontostrengControllerTest {
 
     @Test
     void validateKontostreng_shouldReturnTrueWhenServiceReturnsTrue() {
-        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(true);
+        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new KontostrengValidation().valid(true));
 
-        var result = controller.validateKontostreng("281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(System.LONN, "281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(Boolean.TRUE, result.getBody());
+        assertNotNull(result.getBody());
+        assertEquals(Boolean.TRUE, result.getBody().getValid());
     }
 
     @Test
     void validateKontostreng_shouldReturnFalseWhenServiceReturnsFalse() {
-        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(false);
+        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new KontostrengValidation().valid(false));
 
-        var result = controller.validateKontostreng("ugyldig", null, null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(System.LONN, "ugyldig", null, null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(Boolean.FALSE, result.getBody());
+        assertNotNull(result.getBody());
+        assertEquals(Boolean.FALSE, result.getBody().getValid());
     }
 
     @Test
     void validateKontostreng_shouldPassAllParametersToService() {
-        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(true);
+        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new KontostrengValidation().valid(true));
 
-        controller.validateKontostreng("artskonto", "kostnadssted", "produkt", "oppgave", "felles", "statskonto", "kilde", "2024", "ff1", "ff2", "fullmakt", "regnskapsf");
+        controller.validateKontostreng(System.LONN, "artskonto", "kostnadssted", "produkt", "oppgave", "felles", "statskonto", "kilde", "2024", "ff1", "ff2", "fullmakt", "regnskapsf");
 
         verify(okonomimodellService).getKontostrengValidation(
+                System.LONN,
                 "artskonto", "kostnadssted", "produkt", "oppgave", "felles",
                 "statskonto", "kilde", "2024", "ff1", "ff2", "fullmakt", "regnskapsf");
     }
 
     @Test
     void validateKontostreng_shouldHandleAllNullParameters() {
-        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(false);
+        when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(new KontostrengValidation().valid(false));
 
-        var result = controller.validateKontostreng(null, null, null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(System.LONN, null, null, null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());

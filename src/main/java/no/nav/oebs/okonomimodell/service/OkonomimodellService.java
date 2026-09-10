@@ -6,9 +6,10 @@ import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
 import no.nav.oebs.okonomimodell.repository.ValidateKontostrengProcedure;
 import no.nav.oebs.okonomimodell.repository.SegmentJpaRepository;
 import no.nav.oebs.okonomimodell.mapper.JsonToModelMapper;
+import org.openapitools.model.KontostrengValidation;
+import org.openapitools.model.System;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
-import org.openapitools.model.System;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,20 +38,21 @@ public class OkonomimodellService {
         return jsonToModelMapper.mapJsonToSegments(segments);
     }
 
-    public boolean getKontostrengValidation(String artskonto,
-                                            String kostnadssted,
-                                            String produkt,
-                                            String oppgave,
-                                            String felles,
-                                            String statskonto,
-                                            String kilde,
-                                            String tilsagnsaar,
-                                            String frittfelt1,
-                                            String frittfelt2,
-                                            String fullmaktskode,
-                                            String regnskapsforer) {
+    public KontostrengValidation getKontostrengValidation(System system,
+                                                          String artskonto,
+                                                          String kostnadssted,
+                                                          String produkt,
+                                                          String oppgave,
+                                                          String felles,
+                                                          String statskonto,
+                                                          String kilde,
+                                                          String tilsagnsaar,
+                                                          String frittfelt1,
+                                                          String frittfelt2,
+                                                          String fullmaktskode,
+                                                          String regnskapsforer) {
         Kontostreng kontostreng = Kontostreng.of(artskonto, kostnadssted, produkt, oppgave, felles, statskonto, kilde, tilsagnsaar, frittfelt1, frittfelt2, fullmaktskode, regnskapsforer);
-        return kontostrengValidationRepository.executeValidateKontostrengProcedure(kontostreng);
+        return kontostrengValidationRepository.executeValidateKontostrengProcedure(system, kontostreng);
     }
 
 }
