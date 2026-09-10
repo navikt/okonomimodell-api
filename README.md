@@ -19,6 +19,10 @@ Deretter mappes den over til et Java-objekt i tjenesten, som igjen blir eksponer
 Formålet er å eksponere dataen i samme format som det ligger i viewet i OeBS, men samtidig bruke skjemaen definert i 
 openApi spesifikasjonen slik at dokumentasjon blir automatisk generert i swagger. Det er derfor ingen logikk i tjenesten som endrer dataen.
 
+Ved validering av kontostreng kalles prosedyren `apps.xxrtv_gl_val_kontostreng_pkg.validerkstreng`, som returnerer en json
+med ccid og validateMessage. Dersom ccid er satt i responsen fra oebs ansees kontostrengen som gyldig,
+dersom ccid ikke er satt ansees kontostrengen som ugyldig og validateMessage vil inneholde en feilmelding.
+
 I tillegg benyttes tabellen `xxrtv.xxrtv_okonomimodell_api_logg` til å lagre logger i oebs hver gang det gjøres requester av en bruker mot api-et.
 Formålet med disse loggene er å gi oebs utviklere tilgang til logger uten å måtte gå inn i applikasjonsloggene, og dermed kunne feilsøke problemer knyttet til kall mot oebs direkte fra oebs. 
 Det logges informasjon om tidspunkt for kall, hvilken endpoint som ble kalt, og respons på kallet.
@@ -29,25 +33,44 @@ Det er ulike instanser som kjører mot ulike oebs miljøer. Tjenesten kjører mo
 Det er ingen andre eksterne avhengigheter.
 
 ## Hvordan kjøre lokalt
-Tjenesten kan kjøres lokalt dersom utvikleren som kjører har lese og skrivetilgang til OeBS-u1,
-og har satt følgende environment variabler:
-- `OEBS_USERNAME` - brukernavn for oebs
-- `OEBS_PASSWORD` - passord for oebs
-- `OEBS_URL` - url for oebs
+Tjenesten kan kjøres lokalt dersom utvikleren som kjører har tilgang til oebs, se [oksty-docs](https://navikt.github.io/oksty-documentation/docs/team-oebs/oebs-access#accessing-oebs-locally)
+for info om hvordan få tilgang. I tillegg må følgende env variabler settes: 
+- `OEBS_DB_USERNAME` - brukernavn for oebs, hentes fra secret [okonomimodell-apo-t1](https://console.nav.cloud.nais.io/team/team-oebs/dev-gcp/secret/okonomimodell-api-t1)
+eller [okonomimodell-api-u1](https://console.nav.cloud.nais.io/team/team-oebs/dev-gcp/secret/okonomimodell-api-u1) 
+- `OEBS_DB_PASSWORD` - passord for oebs, hentes fra samme secret som brukerenavn
+- `ORACLE_URL` - url for oebs, hentes fra secret [okonomimodell-api-t1-oracle](https://console.nav.cloud.nais.io/team/team-oebs/dev-gcp/secret/okonomimodell-api-t1-oracle)
+hvor t1 endres til u1 hvis du skal mot u1 
+- `AZURE_APP_CLIENT_ID` - id
+- `AZURE_APP_WELL_KNOWN_URL` - hentes fra environment variablen med samme navn fra applikasjonen [okonomimodell-api-t1](https://console.nav.cloud.nais.io/team/team-oebs/dev-gcp/app/okonomimodell-api-t1/instancegroup/okonomimodell-api-t1-64b6f56b7c)
 
-//todo: Legge til info om de andre environement variablene som må være satt for at man skal kunne kjøre lokalt
+### Teste lokalt 
+For å teste validering av kontostreng-endepunktet er det to mulige scenarioer som skal testes med følgende parametere:
+- Invalid kontostreng: Testes ved å benytte default parametere i swagger
+- Valid kontostreng: Testes ved å sende inn følgende inputparametere til `/kontostreng/validering`:
 
-Samtidig må det være mulig å koble seg opp til oebs, som ligger i sikker sone, fra der koden kjøres. 
-Her kan utvikler enten bruke **vdi-utvikler-oebs** som er opprettet for å gjøre utvikling direkte i sikker sone, eller bruke **Global Secure Access Client**.
-Det kan være lurt å enable **Global Secure Access Client** før man kobler til naisdevice, fordi begge deler er VPN-løsninger som kan gå i bena på hverandre.
+| Inputparameter (endpoint) | Verdi        |
+|---|--------------|
+| system | VIERI        |
+| artskonto | 645000000000 |
+| kostnadssted | 522400       |
+| produkt | AB0001       |
+| oppgave | 000000       |
+| felles | 000000       |
+| statskonto | 060501000000 |
+| kilde | 000008       |
+| tilsagnsar | 000000       |
+| frittfelt1 | 000000       |
+| frittfelt2 | 000000       |
+| fullmaktskode | Z1           |
+| regnskapsforer | 80           |
 
 ## Testing
 Det er satt opp enhetstester med JUnit og Mockito, men det er ikke satt opp noen integrasjonstester.
 
-## Alarmering og Overvåkning
-Det er ikke satt opp noen alarmering, driftsproblemer må derfor fanges opp av brukere som opplever feil ved kall mot API-et
-eller gjennom opplevde problemer i OeBS som kan knyttes til API-et.
+## Alarmering
+Det er satt opp [alarmer for tjenesten i Nais med prefix OkonomimodellApi](https://console.nav.cloud.nais.io/team/team-oebs/alerts?filter=OkonomimodellApi). 
 
+## Overvåkning
 Det er satt opp standard overvåkning av applikasjonene gjennom grafana dashboards:
 - [Grafana dashbboard for t1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-t1?namespace=team-oebs&environment=dev) 
 - [Grafana dashbboard for q1](https://grafana.nav.cloud.nais.io/a/nais-apm-app/services/team-oebs/okonomimodell-api-q1?namespace=team-oebs&environment=dev)
