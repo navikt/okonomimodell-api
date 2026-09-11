@@ -2,20 +2,15 @@ name: Dependabot auto-merge
 on:
   schedule:
     - cron: '0 7-13 * * 1-5'
-  workflow_run:
-    workflows: ['Dependabot deploy verification']
-    types: [completed]
   workflow_dispatch:
 
 jobs:
   automerge:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
     steps:
-
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         id: app-token
         with:

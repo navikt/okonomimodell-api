@@ -52,5 +52,5 @@ spec:
     cpuThresholdPercentage: 80
 
   accessPolicy:
-    inbound:
-      rules: []
+    outbound:
+      external: []
