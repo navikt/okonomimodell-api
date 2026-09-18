@@ -63,8 +63,17 @@ jobs:
       - name: Cleanup dedicated dependabot workload
         if: always() && github.event.pull_request.user.login == 'dependabot[bot]'
         uses: nais/login@40b72a35a18ddf2ad74b632461139ab838cc2a2f # v0
+        env:
+          CLUSTER: dev-gcp
         with:
           team: team-oebs
+
+      - name: Verify kubectl access
+        if: always() && github.event.pull_request.user.login == 'dependabot[bot]'
+        run: |
+          kubectl config current-context
+          kubectl auth can-i delete applications.nais.io -n team-oebs
+          kubectl get application okonomimodell-api-dependabot -n team-oebs --ignore-not-found
 
       - name: Delete workload
         if: always() && github.event.pull_request.user.login == 'dependabot[bot]'
