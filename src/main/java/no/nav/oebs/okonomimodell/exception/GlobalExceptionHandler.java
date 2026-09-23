@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.exception;
 
+import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException;
 import no.nav.security.token.support.core.exceptions.JwtTokenMissingException;
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
 import org.slf4j.Logger;
@@ -52,8 +53,14 @@ public class GlobalExceptionHandler {
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Unauthorized");
         respons.put(MESSAGE, ex.getMessage());
-        respons.put(STATUS, 401);
         respons.put(TIMESTAMP, LocalDateTime.now());
+
+        if (ex.getCause() instanceof JwtTokenInvalidClaimException) {
+            respons.put(STATUS, 403);
+            return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.FORBIDDEN);
+        }
+
+        respons.put(STATUS, 401);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.UNAUTHORIZED);
     }
 
