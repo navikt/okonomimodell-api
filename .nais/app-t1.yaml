@@ -24,8 +24,8 @@ spec:
           product: "okonomisystemer"
           separator: "/"
           name: "okonomimodell/oksty.read"
-          #consumers:
-            #orgno: XXX
+          consumers:
+            - orgno: "991913823"
 
   envFrom:
     - secret: okonomimodell-api-t1

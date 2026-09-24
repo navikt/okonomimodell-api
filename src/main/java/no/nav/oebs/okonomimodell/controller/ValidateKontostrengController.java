@@ -2,7 +2,8 @@ package no.nav.oebs.okonomimodell.controller;
 
 import lombok.AllArgsConstructor;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
-import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.RequiredIssuers;
 import org.jspecify.annotations.Nullable;
 import org.openapitools.api.KontostrengApi;
 import org.openapitools.model.KontostrengValidation;
@@ -17,7 +18,16 @@ public class ValidateKontostrengController implements KontostrengApi {
     private final OkonomimodellService okonomimodellService;
 
     @Override
-    @Protected
+    @RequiredIssuers(value = {
+            @ProtectedWithClaims(
+                    issuer = "azuread",
+                    claimMap = {}
+            ),
+            @ProtectedWithClaims(
+                    issuer = "maskinporten",
+                    claimMap = {"scope=nav:okonomisystemer/okonomimodell/oksty.read"}
+            )
+    })
     public ResponseEntity<KontostrengValidation> validateKontostreng(System system, @Nullable String artskonto, @Nullable String kostnadssted, @Nullable String produkt, @Nullable String oppgave, @Nullable String felles, @Nullable String statskonto, @Nullable String kilde, @Nullable String tilsagnsaar, @Nullable String frittfelt1, @Nullable String frittfelt2, @Nullable String fullmaktskode, @Nullable String regnskapsforer) {
         return ResponseEntity.ok(okonomimodellService.getKontostrengValidation(system, artskonto, kostnadssted, produkt, oppgave, felles, statskonto, kilde, tilsagnsaar, frittfelt1, frittfelt2, fullmaktskode, regnskapsforer));
     }

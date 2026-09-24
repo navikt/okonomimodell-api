@@ -15,6 +15,18 @@ spec:
       allowAllUsers: true
       tenant: nav.no
 
+  maskinporten:
+    enabled: true
+    scopes:
+      exposes:
+        # nav:okonomisystemer/okonomimodell/oksty.read
+        - enabled: true
+          product: "okonomisystemer"
+          separator: "/"
+          name: "okonomimodell/oksty.read"
+          consumers:
+            - orgno: "991913823"
+
   observability:
     autoInstrumentation:
       enabled: true
