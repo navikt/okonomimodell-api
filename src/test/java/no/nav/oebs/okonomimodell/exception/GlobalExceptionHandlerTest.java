@@ -1,7 +1,9 @@
 package no.nav.oebs.okonomimodell.exception;
 
 import no.nav.security.token.support.core.exceptions.JwtTokenMissingException;
+import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException;
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -35,8 +37,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleJwtTokenMissingException_shouldReturn401() {
         var ex = new JwtTokenMissingException("mangler token");
+        var request = mock(HttpServletRequest.class);
+        when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
+        when(request.getMethod()).thenReturn("GET");
 
-        var response = handler.handleJwtTokenMissingException(ex);
+        var response = handler.handleJwtTokenMissingException(ex, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertResponseBody(response.getBody(), 401, "Missing token to access endpoint", "mangler token");
@@ -45,12 +50,30 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleJwtTokenUnauthorizedException_shouldReturn401() {
         var ex = mock(JwtTokenUnauthorizedException.class);
+        var request = mock(HttpServletRequest.class);
         when(ex.getMessage()).thenReturn("ikke autorisert");
+        when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
+        when(request.getMethod()).thenReturn("GET");
 
-        var response = handler.handleJwtTokenUnauthorizedException(ex);
+        var response = handler.handleJwtTokenUnauthorizedException(ex, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertResponseBody(response.getBody(), 401, "Unauthorized", "ikke autorisert");
+    }
+
+    @Test
+    void handleJwtTokenUnauthorizedException_withInvalidClaim_shouldReturn403() {
+        var ex = mock(JwtTokenUnauthorizedException.class);
+        var request = mock(HttpServletRequest.class);
+        when(ex.getMessage()).thenReturn("invalid claim");
+        when(ex.getCause()).thenReturn(new JwtTokenInvalidClaimException("aud"));
+        when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
+        when(request.getMethod()).thenReturn("GET");
+
+        var response = handler.handleJwtTokenUnauthorizedException(ex, request);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertResponseBody(response.getBody(), 403, "Unauthorized", "invalid claim");
     }
 
     @Test
