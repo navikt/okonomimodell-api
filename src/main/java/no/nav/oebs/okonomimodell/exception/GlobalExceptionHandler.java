@@ -9,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -23,6 +27,7 @@ public class GlobalExceptionHandler {
     private static final String MESSAGE = "message";
     private static final String STATUS = "status";
     private static final String TIMESTAMP = "timestamp";
+    private static final Pattern ISSUER_PATTERN = Pattern.compile("issuer \\[([^,\\]]+)");
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleInvalidJsonException(
@@ -38,7 +43,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleJwtTokenMissingException(
-            JwtTokenMissingException ex) {
+            JwtTokenMissingException ex,
+            HttpServletRequest request) {
+        LOGGER.warn("Auth rejected: status=401 path={} method={} reason={}",
+                request.getRequestURI(), request.getMethod(), ex.getMessage());
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Missing token to access endpoint");
         respons.put(MESSAGE, ex.getMessage());
@@ -49,17 +57,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleJwtTokenUnauthorizedException(
-            JwtTokenUnauthorizedException ex) {
+            JwtTokenUnauthorizedException ex,
+            HttpServletRequest request) {
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Unauthorized");
         respons.put(MESSAGE, ex.getMessage());
         respons.put(TIMESTAMP, LocalDateTime.now());
 
         if (ex.getCause() instanceof JwtTokenInvalidClaimException) {
+            LOGGER.warn("Auth rejected: status=403 path={} method={} issuer={} reason={}",
+                    request.getRequestURI(),
+                    request.getMethod(),
+                    extractIssuer(ex.getMessage()),
+                    ex.getMessage());
             respons.put(STATUS, 403);
             return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.FORBIDDEN);
         }
 
+        LOGGER.warn("Auth rejected: status=401 path={} method={} issuer={} reason={}",
+                request.getRequestURI(),
+                request.getMethod(),
+                extractIssuer(ex.getMessage()),
+                ex.getMessage());
         respons.put(STATUS, 401);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.UNAUTHORIZED);
     }
@@ -91,6 +110,14 @@ public class GlobalExceptionHandler {
         respons.put(STATUS, 400);
         respons.put(TIMESTAMP, LocalDateTime.now());
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.BAD_REQUEST);
+    }
+
+    private String extractIssuer(String message) {
+        if (message == null) {
+            return "unknown";
+        }
+        Matcher matcher = ISSUER_PATTERN.matcher(message);
+        return matcher.find() ? matcher.group(1) : "unknown";
     }
 
 }
