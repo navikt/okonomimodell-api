@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +44,7 @@ class OkonomimodellControllerTest {
             var expected = List.of(new Segment());
             when(okonomimodellService.getSegments(any())).thenReturn(expected);
 
-            var result = controller.segments(System.LONN);
+            var result = controller.segments(UUID.randomUUID(), System.LONN);
 
             assertEquals(HttpStatus.OK, result.getStatusCode());
             assertEquals(expected, result.getBody());
@@ -56,7 +57,7 @@ class OkonomimodellControllerTest {
                     .thenThrow(new InvalidJsonException("ugyldig JSON"));
 
             assertThrows(InvalidJsonException.class, () ->
-                    controller.segments(System.LONN));
+                    controller.segments(UUID.randomUUID(), System.LONN));
         }
     }
 
@@ -68,7 +69,7 @@ class OkonomimodellControllerTest {
             var expected = List.of(new Segment());
             when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(expected);
 
-            var result = controller.segmentsBySegmentType(SegmentType.ARTSKONTO, null, System.LONN);
+            var result = controller.segmentsBySegmentType(UUID.randomUUID(), SegmentType.ARTSKONTO, null, System.LONN);
 
             assertEquals(HttpStatus.OK, result.getStatusCode());
             assertEquals(expected, result.getBody());
@@ -80,7 +81,7 @@ class OkonomimodellControllerTest {
             when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(List.of());
             var date = LocalDate.of(2024, 3, 20);
 
-            controller.segmentsBySegmentType(SegmentType.ARTSKONTO, date, System.LONN);
+            controller.segmentsBySegmentType(UUID.randomUUID(),SegmentType.ARTSKONTO, date, System.LONN);
 
             verify(okonomimodellService).getSegmentsBySegmentType(SegmentType.ARTSKONTO, date, System.LONN);
         }
@@ -91,7 +92,7 @@ class OkonomimodellControllerTest {
                     .thenThrow(new InvalidJsonException("ugyldig JSON"));
 
             assertThrows(InvalidJsonException.class, () ->
-                    controller.segmentsBySegmentType(SegmentType.ARTSKONTO, null, System.LONN));
+                    controller.segmentsBySegmentType(UUID.randomUUID(), SegmentType.ARTSKONTO, null, System.LONN));
         }
     }
 }

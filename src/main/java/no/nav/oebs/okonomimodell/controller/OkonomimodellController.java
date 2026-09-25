@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
@@ -21,14 +22,14 @@ public class OkonomimodellController implements SegmenterApi {
 
     @Override
     @ProtectedWithClaims(issuer = "azuread")
-    public ResponseEntity<List<Segment>> segments(System system) {
+    public ResponseEntity<List<Segment>> segments(UUID xCorrelationId, System system) {
         List<Segment> segments = okonomimodellService.getSegments(system);
         return ResponseEntity.ok(segments);
     }
 
     @Override
     @ProtectedWithClaims(issuer = "azuread")
-    public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, LocalDate oppdatertEtter, System system) {
+    public ResponseEntity<List<Segment>> segmentsBySegmentType(UUID xCorrelationId, SegmentType segmenttype, LocalDate oppdatertEtter, System system) {
         List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, oppdatertEtter, system);
         return ResponseEntity.ok(segmentBySegmentType);
     }

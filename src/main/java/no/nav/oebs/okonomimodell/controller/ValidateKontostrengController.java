@@ -10,6 +10,7 @@ import org.openapitools.model.KontostrengValidation;
 import org.openapitools.model.System;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
@@ -28,7 +29,7 @@ public class ValidateKontostrengController implements KontostrengApi {
                     claimMap = {"scope=nav:okonomisystemer/okonomimodell/oksty.read"}
             )
     })
-    public ResponseEntity<KontostrengValidation> validateKontostreng(System system, @Nullable String artskonto, @Nullable String kostnadssted, @Nullable String produkt, @Nullable String oppgave, @Nullable String felles, @Nullable String statskonto, @Nullable String kilde, @Nullable String tilsagnsaar, @Nullable String frittfelt1, @Nullable String frittfelt2, @Nullable String fullmaktskode, @Nullable String regnskapsforer) {
+    public ResponseEntity<KontostrengValidation> validateKontostreng(UUID xCorrelationId, System system, @Nullable String artskonto, @Nullable String kostnadssted, @Nullable String produkt, @Nullable String oppgave, @Nullable String felles, @Nullable String statskonto, @Nullable String kilde, @Nullable String tilsagnsaar, @Nullable String frittfelt1, @Nullable String frittfelt2, @Nullable String fullmaktskode, @Nullable String regnskapsforer) {
         return ResponseEntity.ok(okonomimodellService.getKontostrengValidation(system, artskonto, kostnadssted, produkt, oppgave, felles, statskonto, kilde, tilsagnsaar, frittfelt1, frittfelt2, fullmaktskode, regnskapsforer));
     }
 
