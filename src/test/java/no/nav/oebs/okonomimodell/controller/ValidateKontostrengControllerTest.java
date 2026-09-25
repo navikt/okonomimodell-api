@@ -10,6 +10,8 @@ import org.openapitools.model.KontostrengValidation;
 import org.openapitools.model.System;
 import org.springframework.http.HttpStatus;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -32,7 +34,7 @@ class ValidateKontostrengControllerTest {
         when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new KontostrengValidation().valid(true));
 
-        var result = controller.validateKontostreng(System.LONN, "281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(UUID.randomUUID(), System.LONN, "281000000000", "857410", null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -44,7 +46,7 @@ class ValidateKontostrengControllerTest {
         when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new KontostrengValidation().valid(false));
 
-        var result = controller.validateKontostreng(System.LONN, "ugyldig", null, null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(UUID.randomUUID(), System.LONN, "ugyldig", null, null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
@@ -56,7 +58,7 @@ class ValidateKontostrengControllerTest {
         when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new KontostrengValidation().valid(true));
 
-        controller.validateKontostreng(System.LONN, "artskonto", "kostnadssted", "produkt", "oppgave", "felles", "statskonto", "kilde", "2024", "ff1", "ff2", "fullmakt", "regnskapsf");
+        controller.validateKontostreng(UUID.randomUUID(), System.LONN, "artskonto", "kostnadssted", "produkt", "oppgave", "felles", "statskonto", "kilde", "2024", "ff1", "ff2", "fullmakt", "regnskapsf");
 
         verify(okonomimodellService).getKontostrengValidation(
                 System.LONN,
@@ -69,7 +71,7 @@ class ValidateKontostrengControllerTest {
         when(okonomimodellService.getKontostrengValidation(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(new KontostrengValidation().valid(false));
 
-        var result = controller.validateKontostreng(System.LONN, null, null, null, null, null, null, null, null, null, null, null, null);
+        var result = controller.validateKontostreng(UUID.randomUUID(), System.LONN, null, null, null, null, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());

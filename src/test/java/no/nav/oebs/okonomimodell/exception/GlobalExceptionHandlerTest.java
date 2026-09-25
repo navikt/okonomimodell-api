@@ -18,39 +18,41 @@ import static org.mockito.Mockito.when;
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler handler;
+    private HttpServletRequest request;
 
     @BeforeEach
     void setUp() {
         handler = new GlobalExceptionHandler();
+        request = mock(HttpServletRequest.class);
+        when(request.getParameter("system")).thenReturn("ZK");
+        when(request.getHeader("x-correlation-id")).thenReturn("corr-123");
     }
 
     @Test
     void handleInvalidJsonException_shouldReturn500() {
         var ex = new InvalidJsonException("ugyldig JSON fra DB");
 
-        var response = handler.handleInvalidJsonException(ex);
+        var response = handler.handleInvalidJsonException(ex, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertResponseBody(response.getBody(), 500, "Invalid JSON retrieved from database", "ugyldig JSON fra DB");
+        assertResponseBody(response.getBody(), 500, "Invalid JSON retrieved from database", "ugyldig JSON fra DB", "corr-123", "ZK");
     }
 
     @Test
     void handleJwtTokenMissingException_shouldReturn401() {
         var ex = new JwtTokenMissingException("mangler token");
-        var request = mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
         when(request.getMethod()).thenReturn("GET");
 
         var response = handler.handleJwtTokenMissingException(ex, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertResponseBody(response.getBody(), 401, "Missing token to access endpoint", "mangler token");
+        assertResponseBody(response.getBody(), 401, "Missing token to access endpoint", "mangler token", "corr-123", "ZK");
     }
 
     @Test
     void handleJwtTokenUnauthorizedException_shouldReturn401() {
         var ex = mock(JwtTokenUnauthorizedException.class);
-        var request = mock(HttpServletRequest.class);
         when(ex.getMessage()).thenReturn("ikke autorisert");
         when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
         when(request.getMethod()).thenReturn("GET");
@@ -58,13 +60,12 @@ class GlobalExceptionHandlerTest {
         var response = handler.handleJwtTokenUnauthorizedException(ex, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertResponseBody(response.getBody(), 401, "Unauthorized", "ikke autorisert");
+        assertResponseBody(response.getBody(), 401, "Unauthorized", "ikke autorisert", "corr-123", "ZK");
     }
 
     @Test
     void handleJwtTokenUnauthorizedException_withInvalidClaim_shouldReturn403() {
         var ex = mock(JwtTokenUnauthorizedException.class);
-        var request = mock(HttpServletRequest.class);
         when(ex.getMessage()).thenReturn("invalid claim");
         when(ex.getCause()).thenReturn(new JwtTokenInvalidClaimException("aud"));
         when(request.getRequestURI()).thenReturn("/api/v1/kontostreng");
@@ -73,17 +74,17 @@ class GlobalExceptionHandlerTest {
         var response = handler.handleJwtTokenUnauthorizedException(ex, request);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertResponseBody(response.getBody(), 403, "Unauthorized", "invalid claim");
+        assertResponseBody(response.getBody(), 403, "Unauthorized", "invalid claim", "corr-123", "ZK");
     }
 
     @Test
     void handleGenericException_shouldReturn500() {
         var ex = new RuntimeException("uventet feil");
 
-        var response = handler.handleGenericException(ex);
+        var response = handler.handleGenericException(ex, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertResponseBody(response.getBody(), 500, "An unexpected error occurred", "uventet feil");
+        assertResponseBody(response.getBody(), 500, "An unexpected error occurred", "uventet feil", "corr-123", "ZK");
     }
 
     @Test
@@ -92,7 +93,7 @@ class GlobalExceptionHandlerTest {
         when(ex.getPropertyName()).thenReturn("system");
         when(ex.getMessage()).thenReturn("Failed to convert value");
 
-        var response = handler.handleTypeMismatch(ex);
+        var response = handler.handleTypeMismatch(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map<String, Object> body = response.getBody();
@@ -106,7 +107,7 @@ class GlobalExceptionHandlerTest {
         var ex = mock(MethodArgumentTypeMismatchException.class);
         when(ex.getPropertyName()).thenReturn("oppdatertEtter");
 
-        var response = handler.handleTypeMismatch(ex);
+        var response = handler.handleTypeMismatch(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         Map<String, Object> body = response.getBody();
@@ -118,17 +119,19 @@ class GlobalExceptionHandlerTest {
     void allHandlers_shouldIncludeTimestamp() {
         var ex = new InvalidJsonException("feil");
 
-        var response = handler.handleInvalidJsonException(ex);
+        var response = handler.handleInvalidJsonException(ex, request);
 
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().get("timestamp"));
     }
 
-    private void assertResponseBody(Map<String, Object> body, int expectedStatus, String expectedError, String expectedMessage) {
+    private void assertResponseBody(Map<String, Object> body, int expectedStatus, String expectedError, String expectedMessage, String expectedCorrelationId, String expectedSystem) {
         assertNotNull(body);
         assertEquals(expectedStatus, body.get("status"));
         assertEquals(expectedError, body.get("error"));
         assertEquals(expectedMessage, body.get("message"));
         assertNotNull(body.get("timestamp"));
+        assertEquals(expectedCorrelationId, body.get("correlationId"));
+        assertEquals(expectedSystem, body.get("system"));
     }
 }
