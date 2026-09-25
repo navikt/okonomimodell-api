@@ -90,7 +90,9 @@ public class ValidateKontostrengProcedure {
             }
             boolean valid = !ccid.isEmpty();
             KontostrengValidation validation = new KontostrengValidation().valid(valid);
-            if (!valid) {
+            if (valid) {
+                validation.setCcid(ccid);
+            } else {
                 validation.setFeilmeldingOebs(validateRespons.validateMessage());
             }
             return validation;
