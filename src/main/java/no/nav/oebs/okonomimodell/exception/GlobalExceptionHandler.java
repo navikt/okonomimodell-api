@@ -131,12 +131,12 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
         LOGGER.warn(
                 "400 response due to type mismatch: correlationId={} system={} path={} method={} parameter={} reason={}",
-                getCorrelationId(request),
-                getSystem(request),
+                sanitizeForLog(getCorrelationId(request)),
+                sanitizeForLog(getSystem(request)),
                 sanitizeForLog(request.getRequestURI()),
-                request.getMethod(),
-                ex.getPropertyName(),
-                ex.getMessage());
+                sanitizeForLog(request.getMethod()),
+                sanitizeForLog(ex.getPropertyName()),
+                sanitizeForLog(ex.getMessage()));
         Map<String, Object> respons = new HashMap<>();
         String parameterName = ex.getPropertyName();
         respons.put(ERROR, "Invalid argument provided for parameter: " + parameterName);
