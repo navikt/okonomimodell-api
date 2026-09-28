@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +52,8 @@ class HttpLoggingFilterTest {
     void doFilterInternal_shouldSaveKallLogg() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/segmenter");
         request.setParameter("system", "LONN");
+        String correlationId = UUID.randomUUID().toString();
+        request.addHeader("x-correlation-id", correlationId);
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setStatus(200);
 
@@ -66,6 +69,51 @@ class HttpLoggingFilterTest {
         assertEquals(KallLogg.TYPE_REST, savedLogg.getType());
         assertEquals(KallLogg.RETNING_INN, savedLogg.getKallRetning());
         assertEquals("LONN", savedLogg.getLogginfo());
+        assertEquals(correlationId, savedLogg.getKorrelasjonId());
+    }
+
+    @Test
+    void doFilterInternal_shouldSaveNullCorrelationIdWhenMissing() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/segmenter");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        httpLoggingFilter.doFilterInternal(request, response, filterChain);
+
+        ArgumentCaptor<KallLogg> captor = ArgumentCaptor.forClass(KallLogg.class);
+        verify(kallLoggJpaRepository, times(1)).save(captor.capture());
+
+        KallLogg savedLogg = captor.getValue();
+        assertEquals("null", savedLogg.getKorrelasjonId());
+    }
+
+    @Test
+    void doFilterInternal_shouldSaveNullCorrelationIdWhenInvalid() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/segmenter");
+        request.addHeader("x-correlation-id", " ");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        httpLoggingFilter.doFilterInternal(request, response, filterChain);
+
+        ArgumentCaptor<KallLogg> captor = ArgumentCaptor.forClass(KallLogg.class);
+        verify(kallLoggJpaRepository, times(1)).save(captor.capture());
+
+        KallLogg savedLogg = captor.getValue();
+        assertEquals("null", savedLogg.getKorrelasjonId());
+    }
+
+    @Test
+    void doFilterInternal_shouldSaveNullCorrelationIdWhenHeaderIsNotUuid() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/segmenter");
+        request.addHeader("x-correlation-id", "corr-123");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        httpLoggingFilter.doFilterInternal(request, response, filterChain);
+
+        ArgumentCaptor<KallLogg> captor = ArgumentCaptor.forClass(KallLogg.class);
+        verify(kallLoggJpaRepository, times(1)).save(captor.capture());
+
+        KallLogg savedLogg = captor.getValue();
+        assertEquals("null", savedLogg.getKorrelasjonId());
     }
 
     @Test

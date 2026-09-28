@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.oebs.okonomimodell.config.common.mcd.MdcOperations;
 import no.nav.oebs.okonomimodell.repository.entity.KallLogg;
 import no.nav.oebs.okonomimodell.repository.KallLoggJpaRepository;
 import org.springframework.core.annotation.Order;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -33,12 +33,36 @@ import java.util.Map;
 @AllArgsConstructor
 public class HttpLoggingFilter extends OncePerRequestFilter {
 
+	private static final String CORRELATION_ID_HEADER = "x-correlation-id";
+	private static final String NULL_CORRELATION_ID = "null";
+
 	private final KallLoggJpaRepository kallLoggJpaRepository;
 	private final OebsResponseHolder oebsResponseHolder;
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		return request.getServletPath().contains("/actuator");
+	}
+
+	private String getCorrelationId(HttpServletRequest request) {
+		String correlationId = normalize(request.getHeader(CORRELATION_ID_HEADER));
+		if (correlationId == null) {
+			return NULL_CORRELATION_ID;
+		}
+		try {
+			UUID.fromString(correlationId);
+			return correlationId;
+		} catch (IllegalArgumentException e) {
+			return NULL_CORRELATION_ID;
+		}
+	}
+
+	private String normalize(String value) {
+		if (value == null) {
+			return null;
+		}
+		String trimmed = value.trim();
+		return trimmed.isEmpty() ? null : trimmed;
 	}
 
 	@Override
@@ -73,7 +97,7 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 			long endTime = System.currentTimeMillis();
 
 			KallLogg kallLogg = KallLogg.builder() //
-					.korrelasjonId(MdcOperations.get(MdcOperations.MDC_CORRELATION_ID)) //
+					.korrelasjonId(getCorrelationId(request)) //
 					.tidspunkt(LocalDateTime.now()) //
 					.type(KallLogg.TYPE_REST) //
 					.kallRetning(KallLogg.RETNING_INN) //

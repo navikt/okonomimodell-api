@@ -27,17 +27,28 @@ public class GlobalExceptionHandler {
     private static final String MESSAGE = "message";
     private static final String STATUS = "status";
     private static final String TIMESTAMP = "timestamp";
+    private static final String CORRELATION_ID_FIELD = "correlationId";
+    private static final String CORRELATION_ID_HEADER = "x-correlation-id";
+    private static final String SYSTEM = "system";
     private static final Pattern ISSUER_PATTERN = Pattern.compile("issuer \\[([^,\\]]+)");
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleInvalidJsonException(
-            InvalidJsonException ex) {
-        LOGGER.error("500 response due to Invalid JSON retrieved from database: {}", ex.getMessage());
+            InvalidJsonException ex,
+            HttpServletRequest request) {
+        LOGGER.error(
+                "500 response due to Invalid JSON retrieved from database: correlationId={} system={} path={} method={} reason={}",
+                getCorrelationId(request),
+                getSystem(request),
+                sanitizeForLog(request.getRequestURI()),
+                request.getMethod(),
+                ex.getMessage());
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Invalid JSON retrieved from database");
         respons.put(MESSAGE, ex.getMessage());
         respons.put(STATUS, 500);
         respons.put(TIMESTAMP, LocalDateTime.now());
+        addContextFields(respons, request);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -45,13 +56,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleJwtTokenMissingException(
             JwtTokenMissingException ex,
             HttpServletRequest request) {
-        LOGGER.warn("Auth rejected: status=401 path={} method={} reason={}",
-                request.getRequestURI(), request.getMethod(), ex.getMessage());
+        LOGGER.warn("Auth rejected: status=401 correlationId={} system={} path={} method={} reason={}",
+                sanitizeForLog(getCorrelationId(request)),
+                sanitizeForLog(getSystem(request)),
+                sanitizeForLog(request.getRequestURI()),
+                sanitizeForLog(request.getMethod()),
+                sanitizeForLog(ex.getMessage()));
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Missing token to access endpoint");
         respons.put(MESSAGE, ex.getMessage());
         respons.put(STATUS, 401);
         respons.put(TIMESTAMP, LocalDateTime.now());
+        addContextFields(respons, request);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.UNAUTHORIZED);
     }
 
@@ -63,9 +79,12 @@ public class GlobalExceptionHandler {
         respons.put(ERROR, "Unauthorized");
         respons.put(MESSAGE, ex.getMessage());
         respons.put(TIMESTAMP, LocalDateTime.now());
+        addContextFields(respons, request);
 
         if (ex.getCause() instanceof JwtTokenInvalidClaimException) {
-            LOGGER.warn("Auth rejected: status=403 path={} method={} issuer={} reason={}",
+            LOGGER.warn("Auth rejected: status=403 correlationId={} system={} path={} method={} issuer={} reason={}",
+                    getCorrelationId(request),
+                    getSystem(request),
                     request.getRequestURI(),
                     request.getMethod(),
                     extractIssuer(ex.getMessage()),
@@ -74,7 +93,9 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.FORBIDDEN);
         }
 
-        LOGGER.warn("Auth rejected: status=401 path={} method={} issuer={} reason={}",
+        LOGGER.warn("Auth rejected: status=401 correlationId={} system={} path={} method={} issuer={} reason={}",
+                getCorrelationId(request),
+                getSystem(request),
                 request.getRequestURI(),
                 request.getMethod(),
                 extractIssuer(ex.getMessage()),
@@ -85,20 +106,37 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleGenericException(
-            Exception ex) {
-        LOGGER.error("500 response due to An unexpected error: {}", ex.getMessage());
-        LOGGER.error("Stack trace: ", ex);
+            Exception ex,
+            HttpServletRequest request) {
+        LOGGER.error(
+                "500 response due to An unexpected error: correlationId={} system={} path={} method={} reason={}",
+                getCorrelationId(request),
+                getSystem(request),
+                sanitizeForLog(request.getRequestURI()),
+                request.getMethod(),
+                ex.getMessage(),
+                ex);
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "An unexpected error occurred");
         respons.put(MESSAGE, ex.getMessage());
         respons.put(STATUS, 500);
         respons.put(TIMESTAMP, LocalDateTime.now());
+        addContextFields(respons, request);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleTypeMismatch(
-            MethodArgumentTypeMismatchException ex) {
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
+        LOGGER.warn(
+                "400 response due to type mismatch: correlationId={} system={} path={} method={} parameter={} reason={}",
+                sanitizeForLog(getCorrelationId(request)),
+                sanitizeForLog(getSystem(request)),
+                sanitizeForLog(request.getRequestURI()),
+                sanitizeForLog(request.getMethod()),
+                sanitizeForLog(ex.getPropertyName()),
+                sanitizeForLog(ex.getMessage()));
         Map<String, Object> respons = new HashMap<>();
         String parameterName = ex.getPropertyName();
         respons.put(ERROR, "Invalid argument provided for parameter: " + parameterName);
@@ -109,7 +147,24 @@ public class GlobalExceptionHandler {
         }
         respons.put(STATUS, 400);
         respons.put(TIMESTAMP, LocalDateTime.now());
+        addContextFields(respons, request);
         return new ResponseEntity<>(respons, org.springframework.http.HttpStatus.BAD_REQUEST);
+    }
+
+    private void addContextFields(Map<String, Object> response, HttpServletRequest request) {
+        response.put(CORRELATION_ID_FIELD, getCorrelationId(request));
+        response.put(SYSTEM, getSystem(request));
+    }
+
+    private String getCorrelationId(HttpServletRequest request) {
+        return normalize(request.getHeader(CORRELATION_ID_HEADER));
+    }
+
+    private String getSystem(HttpServletRequest request) {
+        if (request.getParameter(SYSTEM) != null) {
+            return normalize(request.getParameter(SYSTEM));
+        }
+        return null;
     }
 
     private String extractIssuer(String message) {
@@ -118,6 +173,27 @@ public class GlobalExceptionHandler {
         }
         Matcher matcher = ISSUER_PATTERN.matcher(message);
         return matcher.find() ? matcher.group(1) : "unknown";
+    }
+
+    private String sanitizeForLog(String value) {
+        if (value == null) {
+            return null;
+        }
+        StringBuilder sanitized = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            sanitized.append(Character.isISOControl(ch) ? ' ' : ch);
+        }
+        return sanitized.toString();
+    }
+
+    private String normalize(String value) {
+        if (value == null) {
+            return null;
+        }
+        String sanitized = sanitizeForLog(value);
+        String trimmed = sanitized.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
 }
