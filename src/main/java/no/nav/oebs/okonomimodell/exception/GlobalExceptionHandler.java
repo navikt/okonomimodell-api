@@ -57,7 +57,11 @@ public class GlobalExceptionHandler {
             JwtTokenMissingException ex,
             HttpServletRequest request) {
         LOGGER.warn("Auth rejected: status=401 correlationId={} system={} path={} method={} reason={}",
-                getCorrelationId(request), getSystem(request), request.getRequestURI(), request.getMethod(), ex.getMessage());
+                sanitizeForLog(getCorrelationId(request)),
+                sanitizeForLog(getSystem(request)),
+                sanitizeForLog(request.getRequestURI()),
+                sanitizeForLog(request.getMethod()),
+                sanitizeForLog(ex.getMessage()));
         Map<String, Object> respons = new HashMap<>();
         respons.put(ERROR, "Missing token to access endpoint");
         respons.put(MESSAGE, ex.getMessage());
@@ -108,7 +112,7 @@ public class GlobalExceptionHandler {
                 "500 response due to An unexpected error: correlationId={} system={} path={} method={} reason={}",
                 getCorrelationId(request),
                 getSystem(request),
-                request.getRequestURI(),
+                sanitizeForLog(request.getRequestURI()),
                 request.getMethod(),
                 ex.getMessage(),
                 ex);
