@@ -179,7 +179,12 @@ public class GlobalExceptionHandler {
         if (value == null) {
             return null;
         }
-        return value.replaceAll("[\\r\\n\\t\\f\\u0000-\\u001F\\u007F]+", " ");
+        StringBuilder sanitized = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            sanitized.append(Character.isISOControl(ch) ? ' ' : ch);
+        }
+        return sanitized.toString();
     }
 
     private String normalize(String value) {
