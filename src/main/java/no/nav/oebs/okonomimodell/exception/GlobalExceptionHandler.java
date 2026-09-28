@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
                 "500 response due to Invalid JSON retrieved from database: correlationId={} system={} path={} method={} reason={}",
                 getCorrelationId(request),
                 getSystem(request),
-                request.getRequestURI(),
+                sanitizeForLog(request.getRequestURI()),
                 request.getMethod(),
                 ex.getMessage());
         Map<String, Object> respons = new HashMap<>();
@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
                 "400 response due to type mismatch: correlationId={} system={} path={} method={} parameter={} reason={}",
                 getCorrelationId(request),
                 getSystem(request),
-                request.getRequestURI(),
+                sanitizeForLog(request.getRequestURI()),
                 request.getMethod(),
                 ex.getPropertyName(),
                 ex.getMessage());
@@ -158,7 +158,7 @@ public class GlobalExceptionHandler {
 
     private String getSystem(HttpServletRequest request) {
         if (request.getParameter(SYSTEM) != null) {
-            return request.getParameter(SYSTEM);
+            return normalize(request.getParameter(SYSTEM));
         }
         return null;
     }
@@ -171,11 +171,19 @@ public class GlobalExceptionHandler {
         return matcher.find() ? matcher.group(1) : "unknown";
     }
 
+    private String sanitizeForLog(String value) {
+        if (value == null) {
+            return null;
+        }
+        return value.replaceAll("[\\r\\n\\t\\f\\u0000-\\u001F\\u007F]+", " ");
+    }
+
     private String normalize(String value) {
         if (value == null) {
             return null;
         }
-        String trimmed = value.trim();
+        String sanitized = sanitizeForLog(value);
+        String trimmed = sanitized.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
 
