@@ -3,6 +3,7 @@ package no.nav.oebs.okonomimodell.controller;
 import lombok.AllArgsConstructor;
 import no.nav.oebs.okonomimodell.service.OkonomimodellService;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.Unprotected;
 import org.openapitools.api.SegmenterApi;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
@@ -29,7 +30,7 @@ public class OkonomimodellController implements SegmenterApi {
 
     @Override
     @ProtectedWithClaims(issuer = "azuread")
-    public ResponseEntity<List<Segment>> segmentsBySegmentType(UUID xCorrelationId, SegmentType segmenttype, LocalDate oppdatertEtter, System system) {
+    public ResponseEntity<List<Segment>> segmentsBySegmentType(SegmentType segmenttype, UUID xCorrelationId, LocalDate oppdatertEtter, System system) {
         List<Segment> segmentBySegmentType = okonomimodellService.getSegmentsBySegmentType(segmenttype, oppdatertEtter, system);
         return ResponseEntity.ok(segmentBySegmentType);
     }

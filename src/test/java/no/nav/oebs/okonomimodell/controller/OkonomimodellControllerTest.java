@@ -69,7 +69,7 @@ class OkonomimodellControllerTest {
             var expected = List.of(new Segment());
             when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(expected);
 
-            var result = controller.segmentsBySegmentType(UUID.randomUUID(), SegmentType.ARTSKONTO, null, System.LONN);
+            var result = controller.segmentsBySegmentType( SegmentType.ARTSKONTO, UUID.randomUUID(), null, System.LONN);
 
             assertEquals(HttpStatus.OK, result.getStatusCode());
             assertEquals(expected, result.getBody());
@@ -81,7 +81,7 @@ class OkonomimodellControllerTest {
             when(okonomimodellService.getSegmentsBySegmentType(any(), any(), any())).thenReturn(List.of());
             var date = LocalDate.of(2024, 3, 20);
 
-            controller.segmentsBySegmentType(UUID.randomUUID(),SegmentType.ARTSKONTO, date, System.LONN);
+            controller.segmentsBySegmentType(SegmentType.ARTSKONTO,UUID.randomUUID(), date, System.LONN);
 
             verify(okonomimodellService).getSegmentsBySegmentType(SegmentType.ARTSKONTO, date, System.LONN);
         }
@@ -92,7 +92,7 @@ class OkonomimodellControllerTest {
                     .thenThrow(new InvalidJsonException("ugyldig JSON"));
 
             assertThrows(InvalidJsonException.class, () ->
-                    controller.segmentsBySegmentType(UUID.randomUUID(), SegmentType.ARTSKONTO, null, System.LONN));
+                    controller.segmentsBySegmentType(SegmentType.ARTSKONTO,UUID.randomUUID(), null, System.LONN));
         }
     }
 }
