@@ -38,12 +38,16 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+          server-id: github
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
 
       - name: Build and test
         if: github.event.pull_request.user.login == 'dependabot[bot]'
         env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: mvn -B -U verify -Pcoverage
+          MAVEN_USERNAME: x-access-token
+          MAVEN_PASSWORD: ${{ steps.app-token.outputs.token }}
+        run: mvn -B verify -Pcoverage
 
       - name: Push Docker image to GAR
         if: github.event.pull_request.user.login == 'dependabot[bot]'
