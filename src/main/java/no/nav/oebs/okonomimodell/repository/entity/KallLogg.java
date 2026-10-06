@@ -21,7 +21,7 @@ public class KallLogg {
 	public static final String TYPE_PLSQL = "PLSQL";
 	public static final String TYPE_REST = "REST";
 	@Id
-	@SequenceGenerator(name = "XXRTV_OKONOMIMODELL_API_SEQ", sequenceName = "XXRTV_OKONOMIMODELL_API_SEQ", allocationSize = 1)
+	@SequenceGenerator(name = "XXRTV_OKONOMIMODELL_API_SEQ", sequenceName = "XXRTV_OKONOMIMODELL_API_SEQ", schema = "XXRTV", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "XXRTV_OKONOMIMODELL_API_SEQ")
 	@Column(name = "KALL_LOGG_ID")
 	private Long id;
