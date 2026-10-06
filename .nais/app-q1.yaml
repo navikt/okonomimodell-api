@@ -17,15 +17,6 @@ spec:
 
   maskinporten:
     enabled: true
-    scopes:
-      exposes:
-        # nav:okonomisystemer/okonomimodell/oksty.read
-        - enabled: true
-          product: "okonomisystemer"
-          separator: "/"
-          name: "okonomimodell/oksty.read"
-          consumers:
-            - orgno: "991913823"
 
   envFrom:
     - secret: okonomimodell-api-q1

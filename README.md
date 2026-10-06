@@ -27,6 +27,12 @@ I tillegg benyttes tabellen `xxrtv.xxrtv_okonomimodell_api_logg` til å lagre lo
 Formålet med disse loggene er å gi oebs utviklere tilgang til logger uten å måtte gå inn i applikasjonsloggene, og dermed kunne feilsøke problemer knyttet til kall mot oebs direkte fra oebs. 
 Det logges informasjon om tidspunkt for kall, hvilken endpoint som ble kalt, og respons på kallet.
 
+## Autentisering
+Endepunktet `/kontostreng/validering` godtar token fra både Azure AD og Maskinporten.
+Ved bruk av Maskinporten kreves scopet `nav:okonomisystemer/okonomimodell/oksty.read`.
+Instansene t1 og q1 i `dev-gcp` godtar det samme scopet: t1 eksponerer det i Nais-manifestet, mens q1 validerer scopet i applikasjonen uten å eksponere det på nytt.
+Endepunktene for segmentdata krever Azure AD-token.
+
 ## Avhengigheter
 Tjenesten er avhengig av tilkobling mot oebs, både for å hente data og for å logge kall i databasen.
 Det er ulike instanser som kjører mot ulike oebs miljøer. Tjenesten kjører mot u1 lokalt, mot t1 og q1 i dev-gcp, og mot prod i prod.
@@ -42,6 +48,8 @@ eller [okonomimodell-api-u1](https://console.nav.cloud.nais.io/team/team-oebs/de
 hvor t1 endres til u1 hvis du skal mot u1 
 - `AZURE_APP_CLIENT_ID` - id
 - `AZURE_APP_WELL_KNOWN_URL` - hentes fra environment variablen med samme navn fra applikasjonen [okonomimodell-api-t1](https://console.nav.cloud.nais.io/team/team-oebs/dev-gcp/app/okonomimodell-api-t1/instancegroup/okonomimodell-api-t1-64b6f56b7c)
+- `MASKINPORTEN_WELL_KNOWN_URL` - hentes fra environment variablen med samme navn fra applikasjonen okonomimodell-api-t1
+- `MASKINPORTEN_ISSUER` - hentes fra environment variablen med samme navn fra applikasjonen okonomimodell-api-t1
 
 ### Teste lokalt 
 For å teste validering av kontostreng-endepunktet er det to mulige scenarioer som skal testes med følgende parametere:
