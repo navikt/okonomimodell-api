@@ -84,12 +84,12 @@ spec:
         - alert: OkonomimodellApiT1High4xxRate
           expr: |
             (
-              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng", status=~"4.."}[5m]))
+              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/kontostreng/validering", status=~"4.."}[5m]))
               /
-              clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])), 0.1)
+              clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/kontostreng/validering"}[5m])), 0.1)
             ) > 0.25
             and
-            sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/validatekontostreng"}[5m])) > 0.2
+            sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-t1", uri=~"/segmenter.*|/kontostreng/validering"}[5m])) > 0.2
           for: 10m
           annotations:
             summary: "okonomimodell-api-t1 har mange 4xx-feil"
@@ -119,3 +119,114 @@ spec:
             alert_routing_slack: team-oebs-alerts-dev
             alert_type: custom
 
+    - name: okonomimodell-api-q1
+      rules:
+        - alert: OkonomimodellApiQ1JvmHeapPressure
+          expr: >
+            jvm_memory_used_bytes{area="heap", namespace="team-oebs", container="okonomimodell-api-q1"}
+            /
+            jvm_memory_max_bytes{area="heap", namespace="team-oebs", container="okonomimodell-api-q1"}
+            > 0.85
+          for: 5m
+          annotations:
+            summary: "JVM heap usage is above 85% ({{ $value | humanizePercentage }})"
+            consequence: "Risk of OutOfMemoryError and pod crash"
+            action: "Check memory usage and consider increasing memory limits"
+            documentation: "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+            sla: "Respond within 1 hour during business hours"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1DatabaseConnectionsPending
+          expr: hikaricp_connections_pending{namespace="team-oebs", container="okonomimodell-api-q1"} > 0
+          for: 2m
+          annotations:
+            summary: "Database connections are queued ({{ $value }} pending)"
+            consequence: "Events cannot be saved to Oracle — rolled back to Kafka topic"
+            action: "Check that the Oracle database is available. Check HikariCP configuration."
+            documentation: "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+            sla: "Respond within 15 minutes"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1PodRestarts
+          expr: increase(kube_pod_container_status_restarts_total{namespace="team-oebs", container="okonomimodell-api-q1"}[1h]) > 2
+          for: 0m
+          annotations:
+            summary: "Pod has restarted {{ $value }} times in the last hour"
+            consequence: "Unstable application — may temporarily lose Kafka offset or database connection"
+            action: "Check pod logs for the cause of the crashes"
+            documentation: "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+            sla: "Respond within 30 minutes during business hours"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1ErrorLogsHigh
+          expr: increase(logback_events_total{level="error", namespace="team-oebs", container="okonomimodell-api-q1"}[5m]) > 3
+          for: 2m
+          annotations:
+            summary: "High rate of ERROR log messages ({{ $value }} in last 5 min)"
+            consequence: "Events may be failing during processing"
+            action: "Check application logs for the cause of the errors"
+            documentation: "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+            sla: "Respond within 1 hour during business hours"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1InstanceDown
+          expr: kube_deployment_status_replicas_available{namespace="team-oebs", deployment="okonomimodell-api-q1"} == 0
+          for: 10m
+          annotations:
+            summary: "okonomimodell-api-q1 has no available replicas"
+            consequence: "Okonomimodell-api-q1 is not available"
+            action: "Check deploy status and pods with kubectl describe deploy/pod and kubectl logs"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1High4xxRate
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1", uri=~"/segmenter.*|/kontostreng/validering", status=~"4.."}[5m]))
+              /
+              clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1", uri=~"/segmenter.*|/kontostreng/validering"}[5m])), 0.1)
+            ) > 0.25
+            and
+            sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1", uri=~"/segmenter.*|/kontostreng/validering"}[5m])) > 0.2
+          for: 10m
+          annotations:
+            summary: "okonomimodell-api-q1 har mange 4xx-feil"
+            consequence: "Auth-regresjoner eller tilgangsregler kan blokkere verifisering"
+            action: "Sjekk tokenvalidering, klientoppsett og nylige auth-endringer"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
+
+        - alert: OkonomimodellApiQ1HighErrorRate
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1", status=~"5.."}[5m]))
+              /
+              clamp_min(sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1"}[5m])), 0.1)
+            ) > 0.05
+            and
+            sum(rate(http_server_requests_seconds_count{namespace="team-oebs", app="okonomimodell-api-q1"}[5m])) > 0.5
+          for: 10m
+          annotations:
+            summary: "okonomimodell-api-q1 har høy 5xx-rate"
+            consequence: "Klienter får feilrespons fra tjenesten"
+            action: "Sjekk feil i logger og traces for feilede kall"
+          labels:
+            severity: warning
+            alert_routing_slack: team-oebs-alerts-dev
+            alert_type: custom
