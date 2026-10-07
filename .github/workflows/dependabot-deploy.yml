@@ -41,6 +41,16 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
+      - name: Debug token + package access
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          echo "Token length: ${#TOKEN}"
+          curl -s -o /dev/null -w "pkg_status=%{http_code}\n" \
+            -H "Authorization: Bearer $TOKEN" \
+            https://maven.pkg.github.com/navikt/oebs-contracts/no/nav/oebs/oebs-contracts/1.0-SNAPSHOT/maven-metadata.xml
+
       - name: Build and test
         if: github.event.pull_request.user.login == 'dependabot[bot]'
         env:
