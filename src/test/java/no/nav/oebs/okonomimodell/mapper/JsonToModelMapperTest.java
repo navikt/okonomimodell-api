@@ -178,6 +178,26 @@ class JsonToModelMapperTest {
     }
 
     @Test
+    void mapJsonStringToSegment_shouldParseDatesInIsoDateTimeFormat() {
+        String json = """
+                {
+                "segmentType": "FELLES",
+                "segmentVerdi": "C00048",
+                "beskrivelse": "Stipend og videreutdanning - Ansatte",
+                "startDato": "2023-01-01 00:00:00",
+                "sluttDato": "",
+                "aktiv": "true",
+                "relasjon": []
+                }
+                """;
+
+        Segment segment = mapper.mapJsonStringToSegment(json);
+
+        assertEquals(java.time.LocalDate.of(2023, 1, 1), segment.getStartDato());
+        assertNull(segment.getSluttDato());
+    }
+
+    @Test
     void mapJsonStringToSegment_shouldReturnNullDatesForEmptyStrings() {
         String json = """
                 {
