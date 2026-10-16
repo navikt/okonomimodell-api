@@ -2,7 +2,9 @@ package no.nav.oebs.okonomimodell.mapper;
 
 import no.nav.oebs.okonomimodell.exception.InvalidJsonException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openapitools.model.Segment;
 import org.openapitools.model.SegmentType;
 
@@ -217,19 +219,20 @@ class JsonToModelMapperTest {
         assertNull(segment.getSluttDato());
     }
 
-    @Test
-    void mapJsonStringToSegment_shouldReturnNullDateForNonIsoFormat() {
+    @ParameterizedTest
+    @ValueSource(strings = {"01-06-2025", "2025-13-01", "2025-02-30 00:00:00"})
+    void mapJsonStringToSegment_shouldReturnNullDateForUnsupportedOrInvalidDateFormats(String startDato) {
         String json = """
                 {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Test",
-                "startDato": "01-06-2025",
+                "startDato": "%s",
                 "sluttDato": "",
                 "aktiv": "false",
                 "relasjon": []
                 }
-                """;
+                """.formatted(startDato);
 
         Segment segment = mapper.mapJsonStringToSegment(json);
 
