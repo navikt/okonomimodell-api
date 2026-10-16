@@ -74,8 +74,8 @@ class JsonToModelMapperTest {
                   "segmentType": "ARTSKONTO",
                   "segmentVerdi": "281000000000",
                   "beskrivelse": "Pensjonspremie",
-                  "startDato": "01-01-2025",
-                  "sluttDato": "30-40-2026",
+                  "startDato": "2025-01-01",
+                  "sluttDato": "2026-12-30",
                   "aktiv":    "false",
                   "relasjon": [
                     {
@@ -123,7 +123,7 @@ class JsonToModelMapperTest {
                  "segmentType": "ARTSKONTO",
                  "segmentVerdi": "857630",
                  "beskrivelse": "Virksomhetsteknologi",
-                 "startDato": "01-01-2025",
+                 "startDato": "2025-01-01",
                  "sluttDato": "",
                  "aktiv":    "false",
                  "relasjon": [
@@ -135,7 +135,7 @@ class JsonToModelMapperTest {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Infrastruktur",
-                "startDato": "01-01-2025",
+                "startDato": "2025-01-01",
                 "sluttDato": "",
                 "aktiv": "false",
                 "relasjon": [
@@ -158,14 +158,14 @@ class JsonToModelMapperTest {
     }
 
     @Test
-    void mapJsonStringToSegment_shouldParseDatesInDdMmYyyyFormat() {
+    void mapJsonStringToSegment_shouldParseDatesInIsoFormat() {
         String json = """
                 {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Test",
-                "startDato": "01-06-2025",
-                "sluttDato": "31-12-2025",
+                "startDato": "2025-06-01",
+                "sluttDato": "2025-12-31",
                 "aktiv": "true",
                 "relasjon": []
                 }
@@ -198,13 +198,13 @@ class JsonToModelMapperTest {
     }
 
     @Test
-    void mapJsonStringToSegment_shouldReturnNullDateForUnrecognizedFormat() {
+    void mapJsonStringToSegment_shouldReturnNullDateForNonIsoFormat() {
         String json = """
                 {
                 "segmentType": "KOSTNADSSTED",
                 "segmentVerdi": "857410",
                 "beskrivelse": "Test",
-                "startDato": "2025-06-01",
+                "startDato": "01-06-2025",
                 "sluttDato": "",
                 "aktiv": "false",
                 "relasjon": []

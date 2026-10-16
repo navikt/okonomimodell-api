@@ -13,6 +13,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Slf4j
@@ -28,7 +29,7 @@ public class JsonToModelMapper {
     private static final String START_DATE = "startDato";
     private static final String END_DATE = "sluttDato";
     private static final String AKTIV = "aktiv";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public List<Segment> mapJsonToSegments(List<String> segments) {
         return segments.stream()
@@ -87,8 +88,8 @@ public class JsonToModelMapper {
 
         try {
             return LocalDate.parse(date, DATE_FORMATTER);
-        } catch (Exception e) {
-            LOGGER.warn("Failed to parse date: {}. Expected format is dd-MM-yyyy. Exception was thrown with message {} ", date, e.getMessage());
+        } catch (DateTimeParseException e) {
+            LOGGER.warn("Failed to parse date: {}. Expected format is yyyy-MM-dd. Exception was thrown with message {}", date, e.getMessage());
             return null;
         }
     }
