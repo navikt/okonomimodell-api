@@ -12,8 +12,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +32,10 @@ public class JsonToModelMapper {
     private static final String END_DATE = "sluttDato";
     private static final String AKTIV = "aktiv";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withResolverStyle(ResolverStyle.STRICT);
+    private static final String ISO_DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
+    private static final String ISO_DATE_TIME_PATTERN = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}";
 
     public List<Segment> mapJsonToSegments(List<String> segments) {
         return segments.stream()
@@ -86,11 +92,25 @@ public class JsonToModelMapper {
             return null;
         }
 
-        try {
-            return LocalDate.parse(date, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            LOGGER.warn("Failed to parse date: {}. Expected format is yyyy-MM-dd. Exception was thrown with message {}", date, e.getMessage());
-            return null;
+        if (date.matches(ISO_DATE_PATTERN)) {
+            try {
+                return LocalDate.parse(date, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                LOGGER.warn("Failed to parse date: {}. Expected format is yyyy-MM-dd or yyyy-MM-dd HH:mm:ss. Exception was thrown with message {}", date, e.getMessage());
+                return null;
+            }
         }
+
+        if (date.matches(ISO_DATE_TIME_PATTERN)) {
+            try {
+                return LocalDateTime.parse(date, DATE_TIME_FORMATTER).toLocalDate();
+            } catch (DateTimeParseException e) {
+                LOGGER.warn("Failed to parse date: {}. Expected format is yyyy-MM-dd or yyyy-MM-dd HH:mm:ss. Exception was thrown with message {}", date, e.getMessage());
+                return null;
+            }
+        }
+
+        LOGGER.warn("Failed to parse date: {}. Expected format is yyyy-MM-dd or yyyy-MM-dd HH:mm:ss", date);
+        return null;
     }
 }
