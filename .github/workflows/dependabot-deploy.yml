@@ -60,14 +60,14 @@ jobs:
 
       - name: Push Docker image to GAR
         if: github.event.pull_request.user.login == 'dependabot[bot]'
-        uses: nais/docker-build-push@423a915c9b72edf2ba848b88171ccb0489e2a40a
+        uses: nais/docker-build-push@bfe52e3ad6d0e96fd1056a03acb7b619aaffb39d
         id: docker-build-push
         with:
           team: team-oebs
 
       - name: Deploy to dedicated dependabot workload
         if: github.event.pull_request.user.login == 'dependabot[bot]'
-        uses: nais/deploy/actions/deploy@027a91857992525139798892f2804b0ca21f4af6
+        uses: nais/deploy/actions/deploy@7ad7c2b833e1db74a80954e3ee6bb6ac060a8ae7
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/app-dependabot.yaml
