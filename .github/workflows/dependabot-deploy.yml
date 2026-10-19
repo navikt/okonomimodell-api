@@ -31,6 +31,8 @@ jobs:
         with:
           app-id: ${{ secrets.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
+          permission-contents: read
+          permission-packages: read
 
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
         if: github.event.pull_request.user.login == 'dependabot[bot]'
