@@ -42,7 +42,7 @@ spec:
             alert_type: custom
 
         - alert: OkonomimodellApiT1PodRestarts
-          expr: increase(kube_pod_container_status_restarts_total{namespace="team-oebs", container="okonomimodell-api-t1"}[1h]) > 2
+          expr: increase(kube_pod_container_status_restarts_total{namespace="team-oebs", container="okonomimodell-api-t1"}[1h]) > 3
           for: 0m
           annotations:
             summary: "Pod has restarted {{ $value }} times in the last hour"
@@ -154,7 +154,7 @@ spec:
             alert_type: custom
 
         - alert: OkonomimodellApiQ1PodRestarts
-          expr: increase(kube_pod_container_status_restarts_total{namespace="team-oebs", container="okonomimodell-api-q1"}[1h]) > 2
+          expr: increase(kube_pod_container_status_restarts_total{namespace="team-oebs", container="okonomimodell-api-q1"}[1h]) > 3
           for: 0m
           annotations:
             summary: "Pod has restarted {{ $value }} times in the last hour"
