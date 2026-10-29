@@ -16,6 +16,9 @@ spec:
       enabled: true
       tenant: trygdeetaten.no
 
+  maskinporten:
+    enabled: true
+
   envFrom:
     - secret: dependabot-oebs-t1
     - secret: okonomimodell-api-dependabot-oracle
