@@ -35,25 +35,12 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
-      - name: Verify GITHUB_TOKEN package access
-        if: github.event.pull_request.user.login == 'dependabot[bot]'
-        env:
-          MAVEN_USERNAME: ${{ github.actor }}
-          MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl --fail --silent --show-error \
-            --user "$MAVEN_USERNAME:$MAVEN_PASSWORD" \
-            --output /dev/null --write-out "pkg_status=%{http_code}\n" \
-            https://maven.pkg.github.com/navikt/oebs-contracts/no/nav/oebs/oebs-contracts/1.0-SNAPSHOT/maven-metadata.xml
-
       - name: Build and test
         if: github.event.pull_request.user.login == 'dependabot[bot]'
         env:
           MAVEN_USERNAME: ${{ github.actor }}
           MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          maven_repository=$(mktemp -d "$RUNNER_TEMP/maven-repository.XXXXXX")
-          mvn -B -U -Dmaven.repo.local="$maven_repository" verify -Pcoverage
+        run: mvn -B -U verify -Pcoverage
 
       - name: Push Docker image to GAR
         if: github.event.pull_request.user.login == 'dependabot[bot]'
