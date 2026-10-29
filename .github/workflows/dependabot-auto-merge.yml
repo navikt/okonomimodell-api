@@ -11,14 +11,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         id: app-token
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Automerge Dependabot PRs
-        uses: navikt/automerge-dependabot@0e342d25820ca0d2941dcdcad4b7bbb59ad59122
+        uses: navikt/automerge-dependabot@09f5db3dd1413c6de20825c6b6c3e1cb682c92de
         with:
           token: ${{ steps.app-token.outputs.token }}
           blackout-periods: "Sat,Sun,May 1,May 17,Dec 24-Jan 3"
