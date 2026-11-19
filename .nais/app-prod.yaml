@@ -26,6 +26,7 @@ spec:
           name: "okonomimodell/oksty.read"
           consumers:
             - orgno: "991913823"
+            - orgno: "981953134"
 
   observability:
     autoInstrumentation:
