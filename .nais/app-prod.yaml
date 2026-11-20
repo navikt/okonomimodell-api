@@ -65,6 +65,6 @@ spec:
     cpuThresholdPercentage: 80
 
   ingresses:
-    - https://okonomimodell-api.ekstern.nav.no
+    - https://okonomimodell-api.nav.no
 
 
