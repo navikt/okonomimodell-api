@@ -8,11 +8,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-      deploy_prod:
-        description: 'Deploy to production'
-        required: true
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -95,7 +90,7 @@ jobs:
   deploy-prod:
     name: Deploy to prod
     needs: [build, deploy-t1, deploy-q1]
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy_prod == true
+    if: github.event_name != 'pull_request' && github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
