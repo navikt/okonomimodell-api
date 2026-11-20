@@ -27,6 +27,10 @@ spec:
           consumers:
             - orgno: "991913823"
 
+  envFrom:
+    - secret: okonomimodell-api
+    - secret: okonomimodell-api-oracle
+
   observability:
     autoInstrumentation:
       enabled: true
@@ -38,14 +42,14 @@ spec:
 
   liveness:
     path: /api/v1/actuator/health/liveness
-    initialDelay: 10
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 3
 
   readiness:
     path: /api/v1/actuator/health/readiness
-    initialDelay: 10
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 3
 
   resources:
@@ -63,18 +67,4 @@ spec:
   ingresses:
     - https://okonomimodell-api.nav.no
 
-  accessPolicy:
-    inbound:
-      rules: []
-    outbound:
-      external: []
-      # TODO: Add OeBS hostname here once brunnmursåpning is confirmed
-      # external:
-      #   - host: <oebs-prod-hostname>
 
-  envFrom:
-    - secret: okonomimodell-api-oebs-credentials
-
-  env:
-    - name: SPRING_PROFILES_ACTIVE
-      value: prod
