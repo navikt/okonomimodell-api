@@ -40,7 +40,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           if [ "${{ github.actor }}" != "dependabot[bot]" ]; then
-            mvn -B verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+            mvn -B -U verify -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           else
             mvn -B verify -Pcoverage
           fi
