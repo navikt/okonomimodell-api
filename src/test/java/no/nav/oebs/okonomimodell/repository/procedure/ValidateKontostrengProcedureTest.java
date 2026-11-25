@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.repository.procedure;
 
+import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
 import no.nav.oebs.okonomimodell.dto.Kontostreng;
 import no.nav.oebs.okonomimodell.dto.ValidateRespons;
 import no.nav.oebs.okonomimodell.exception.InvalidOebsResponseException;
@@ -37,11 +38,14 @@ class ValidateKontostrengProcedureTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private OebsResponseHolder oebsResponseHolder;
+
     private ValidateKontostrengProcedure procedure;
 
     @BeforeEach
     void setUp() {
-        procedure = new ValidateKontostrengProcedure(dataSource, objectMapper);
+        procedure = new ValidateKontostrengProcedure(dataSource, objectMapper, oebsResponseHolder);
         ReflectionTestUtils.setField(procedure, "validateKontostrengCall", simpleJdbcCall);
     }
 
