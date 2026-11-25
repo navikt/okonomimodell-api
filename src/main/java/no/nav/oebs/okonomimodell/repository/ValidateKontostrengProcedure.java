@@ -1,5 +1,6 @@
 package no.nav.oebs.okonomimodell.repository;
 
+import no.nav.oebs.okonomimodell.config.common.logging.OebsResponseHolder;
 import no.nav.oebs.okonomimodell.exception.InvalidOebsResponseException;
 import org.openapitools.model.KontostrengValidation;
 import tools.jackson.core.JacksonException;
@@ -48,9 +49,10 @@ public class ValidateKontostrengProcedure {
 
     private final SimpleJdbcCall validateKontostrengCall;
     private final ObjectMapper objectMapper;
+    private final OebsResponseHolder oebsResponseHolder;
 
     @Autowired
-    public ValidateKontostrengProcedure(DataSource dataSource, ObjectMapper objectMapper) {
+    public ValidateKontostrengProcedure(DataSource dataSource, ObjectMapper objectMapper, OebsResponseHolder oebsResponseHolder) {
         this.validateKontostrengCall = new SimpleJdbcCall(dataSource)
                 .withSchemaName(SCHEMA)
                 .withCatalogName(PACKAGE)
@@ -74,11 +76,15 @@ public class ValidateKontostrengProcedure {
                         new SqlOutParameter(OUT_PARAM_MESSAGE, Types.VARCHAR)
                 );
         this.objectMapper = objectMapper;
+        this.oebsResponseHolder = oebsResponseHolder;
     }
 
     public KontostrengValidation executeValidateKontostrengProcedure(System system, Kontostreng kontostreng) {
         Map<String, Object> result = getValidateKontostreng(system, kontostreng);
         String outMessage = (String) result.get(OUT_PARAM_MESSAGE);
+        if (outMessage != null ) {
+            oebsResponseHolder.set(List.of(outMessage));
+        }
 
         try {
             ValidateRespons validateRespons = parseValidateRespons(outMessage);

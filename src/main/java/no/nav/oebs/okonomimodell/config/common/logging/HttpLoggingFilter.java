@@ -41,8 +41,8 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		return request.getServletPath().contains("/actuator")
-				|| request.getServletPath().contains("/swagger");
+		return !(request.getServletPath().contains("/kontostreng")
+				|| request.getServletPath().contains("/segmenter"));
 	}
 
 	private String getCorrelationId(HttpServletRequest request) {
