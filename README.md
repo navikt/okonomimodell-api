@@ -1,6 +1,6 @@
 # Okonomimodell API 
 
-Tjenesten eksponerer et API for å hente data segmenter fra økonomimodellen i OeBS-databasen,
+Tjenesten eksponerer et API for å hente data segmenter og validere kontostreng fra økonomimodellen i OeBS-databasen,
 og fungerer dermed som et integrasjonslag mellom OeBS og andre tjenester som trenger tilgang til konteringsinfo fra OeBS. 
 Formålet er at API-et skal være generelt slik at det kan benyttes av flere tjenester.
 
@@ -32,6 +32,18 @@ Endepunktet `/kontostreng/validering` godtar token fra både Azure AD og Maskinp
 Ved bruk av Maskinporten kreves scopet `nav:okonomisystemer/okonomimodell/oksty.read`.
 Instansene t1 og q1 i `dev-gcp` godtar det samme scopet: t1 eksponerer det i Nais-manifestet, mens q1 validerer scopet i applikasjonen uten å eksponere det på nytt.
 Endepunktene for segmentdata krever Azure AD-token.
+
+## Konsumenter 
+Tjenesten har i dag to konsumenter: Vieri og Zalaris 
+* **Vieri** benytter bare endepunktet for validering av kontostreng, og autentiserer seg via maskinporten.
+Ved henvendelser send mail til `support@vieri.no`
+* **Zalaris** er lønnssystemet og benytter endepunkter for å henge segmentdata og validering av kontostreng. 
+  * Autentiserer
+  seg via Azure AD med trygdeetaten tenant. I test bruker den azure appen [Zalaris-SAP-IntegrationSuite-Client-Test](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Overview/appId/301f612f-eab6-47b5-84d0-8e517a8b48fc)
+  Tilgang for Zalaris er enda ikke konfiguert i preprod og prod. Authentiseringen bør endres til maskinporten i fremtiden,
+  for å slippe kongigurering av Azure AD for Zalaris. 
+  * Ved behov for henvendelser send mail til `ugis.revelis@zalaris.com`. Dette bør på sikt endres til en generell adresse,
+  slik at kontakten ikke er personavhengig.
 
 ## Avhengigheter
 Tjenesten er avhengig av tilkobling mot oebs, både for å hente data og for å logge kall i databasen.
